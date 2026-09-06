@@ -28,6 +28,6 @@ class load_website extends Controller
 
     function order_confirm()
     {
-        return view('order_confirmation');
+        return view('order-confirmation');
     }
 }

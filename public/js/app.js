@@ -181,10 +181,10 @@ function renderProducts(data, containerId) {
     `).join('');
 }
 
-// Initialize products
-renderProducts(products, 'productsGrid');
-renderProducts(winterProducts, 'winterWearGrid');
-renderProducts(beautyProducts, 'beautyHealthGrid');
+// // Initialize products
+// renderProducts(products, 'productsGrid');
+// renderProducts(winterProducts, 'winterWearGrid');
+// renderProducts(beautyProducts, 'beautyHealthGrid');
 
 // Carousel functionality
 let currentSlideIndex = 0;

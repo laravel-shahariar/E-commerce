@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class component_layout extends Component
+class preview extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class component_layout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.component_layout');
+        return view('components.preview');
     }
 }
