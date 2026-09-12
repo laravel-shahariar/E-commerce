@@ -30,4 +30,29 @@ class load_website extends Controller
     {
         return view('order-confirmation');
     }
+
+    function orders()
+    {
+        return view('my-orders');
+    }
+
+    function account()
+    {
+        return view('account');
+    }
+
+    function category()
+    {
+        return view('category');
+    }
+
+    function wishlist()
+    {
+        return view('wishlist');
+    }
+
+    function contact()
+    {
+        return view("contact");
+    }
 }

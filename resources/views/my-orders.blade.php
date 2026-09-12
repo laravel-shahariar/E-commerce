@@ -1,160 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders - emox</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #00a8cc;
-            --success-color: #17a2b8;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 40px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-        }
-
-        .header-center {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-        }
-
-        .search-bar button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .header-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 12px;
-        }
-
-        .header-icon:hover {
-            color: var(--primary-color);
-        }
-
-        .icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        /* Filter Section */
-        .filter-section {
-            background-color: var(--white);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-label {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .filter-tabs {
-            display: flex;
+@extends("template.basic")
+@section("title", "My Orders")
+@section("style")
+<style>
+.filter-tabs {
+    display: flex;
             gap: 10px;
             flex-wrap: wrap;
-        }
+}
 
-        .filter-btn {
-            padding: 8px 16px;
+.filter-btn {
+    padding: 8px 16px;
             border: 2px solid var(--border-color);
             background-color: var(--white);
             border-radius: 20px;
@@ -163,208 +18,208 @@
             font-weight: 600;
             color: var(--text-dark);
             transition: all 0.3s ease;
-        }
+}
 
-        .filter-btn:hover {
-            border-color: var(--primary-color);
+.filter-btn:hover {
+    border-color: var(--primary-color);
             color: var(--primary-color);
-        }
+}
 
-        .filter-btn.active {
-            background-color: var(--primary-color);
+.filter-btn.active {
+    background-color: var(--primary-color);
             color: var(--white);
             border-color: var(--primary-color);
-        }
+}
 
-        .search-input {
-            flex: 1;
+.search-input {
+    flex: 1;
             min-width: 200px;
             padding: 8px 15px;
             border: 2px solid var(--border-color);
             border-radius: 4px;
             font-size: 13px;
-        }
+}
 
-        /* Orders List */
+/* Orders List */
         .orders-container {
-            display: flex;
+    display: flex;
             flex-direction: column;
             gap: 20px;
-        }
+}
 
-        /* Order Card */
+/* Order Card */
         .order-card {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: all 0.3s ease;
-        }
+}
 
-        .order-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+.order-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
-        .order-header {
-            padding: 20px;
+.order-header {
+    padding: 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             user-select: none;
-        }
+}
 
-        .order-header:hover {
-            background-color: var(--light-gray);
-        }
+.order-header:hover {
+    background-color: var(--light-gray);
+}
 
-        .order-info {
-            flex: 1;
-        }
+.order-info {
+    flex: 1;
+}
 
-        .order-number {
-            font-size: 16px;
+.order-number {
+    font-size: 16px;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 5px;
-        }
+}
 
-        .order-details-row {
-            display: flex;
+.order-details-row {
+    display: flex;
             gap: 30px;
             font-size: 13px;
             margin-bottom: 8px;
-        }
+}
 
-        .order-detail-item {
-            display: flex;
+.order-detail-item {
+    display: flex;
             gap: 8px;
-        }
+}
 
-        .order-detail-label {
-            color: var(--text-light);
+.order-detail-label {
+    color: var(--text-light);
             font-weight: 600;
-        }
+}
 
-        .order-detail-value {
-            color: var(--text-dark);
-        }
+.order-detail-value {
+    color: var(--text-dark);
+}
 
-        .order-status {
-            display: inline-block;
+.order-status {
+    display: inline-block;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-        }
+}
 
-        .status-confirmed {
-            background-color: #e8f5e9;
+.status-confirmed {
+    background-color: #e8f5e9;
             color: #2e7d32;
-        }
+}
 
-        .status-processing {
-            background-color: #fff3e0;
+.status-processing {
+    background-color: #fff3e0;
             color: #e65100;
-        }
+}
 
-        .status-shipped {
-            background-color: #e3f2fd;
+.status-shipped {
+    background-color: #e3f2fd;
             color: #1565c0;
-        }
+}
 
-        .status-delivered {
-            background-color: #e8f5e9;
+.status-delivered {
+    background-color: #e8f5e9;
             color: #00796b;
-        }
+}
 
-        .order-amount {
-            display: flex;
+.order-amount {
+    display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 8px;
-        }
+}
 
-        .order-total {
-            font-size: 18px;
+.order-total {
+    font-size: 18px;
             font-weight: 700;
             color: var(--text-dark);
-        }
+}
 
-        .order-total-label {
-            font-size: 12px;
+.order-total-label {
+    font-size: 12px;
             color: var(--text-light);
-        }
+}
 
-        .expand-btn {
-            background: none;
+.expand-btn {
+    background: none;
             border: none;
             font-size: 20px;
             cursor: pointer;
             color: var(--text-light);
             transition: transform 0.3s ease;
             margin-left: 20px;
-        }
+}
 
-        .expand-btn.expanded {
-            transform: rotate(180deg);
-        }
+.expand-btn.expanded {
+    transform: rotate(180deg);
+}
 
-        /* Order Content (Collapsed by default) */
+/* Order Content (Collapsed by default) */
         .order-content {
-            max-height: 0;
+    max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-        }
+}
 
-        .order-content.expanded {
-            max-height: 1000px;
-        }
+.order-content.expanded {
+    max-height: 1000px;
+}
 
-        .order-body {
-            padding: 20px;
+.order-body {
+    padding: 20px;
             border-top: 1px solid var(--border-color);
             background-color: var(--light-gray);
-        }
+}
 
-        .order-section {
-            margin-bottom: 25px;
-        }
+.order-section {
+    margin-bottom: 25px;
+}
 
-        .order-section:last-child {
-            margin-bottom: 0;
-        }
+.order-section:last-child {
+    margin-bottom: 0;
+}
 
-        .section-title {
-            font-size: 14px;
+.section-title {
+    font-size: 14px;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 15px;
             display: flex;
             gap: 8px;
             align-items: center;
-        }
+}
 
-        /* Order Items */
+/* Order Items */
         .order-items {
-            display: flex;
+    display: flex;
             flex-direction: column;
             gap: 12px;
-        }
+}
 
-        .order-item {
-            display: grid;
+.order-item {
+    display: grid;
             grid-template-columns: 80px 1fr 60px 100px 100px;
             gap: 15px;
             padding: 12px;
             background-color: var(--white);
             border-radius: 4px;
             align-items: center;
-        }
+}
 
-        .item-image {
-            width: 80px;
+.item-image {
+    width: 80px;
             height: 80px;
             background-color: var(--light-gray);
             border-radius: 4px;
@@ -372,122 +227,122 @@
             align-items: center;
             justify-content: center;
             font-size: 35px;
-        }
+}
 
-        .item-info {
-            display: flex;
+.item-info {
+    display: flex;
             flex-direction: column;
             gap: 5px;
-        }
+}
 
-        .item-name {
-            font-size: 13px;
+.item-name {
+    font-size: 13px;
             font-weight: 600;
             color: var(--text-dark);
-        }
+}
 
-        .item-sku {
-            font-size: 11px;
+.item-sku {
+    font-size: 11px;
             color: var(--text-light);
-        }
+}
 
-        .item-qty {
-            text-align: center;
+.item-qty {
+    text-align: center;
             font-size: 13px;
             font-weight: 600;
             color: var(--text-dark);
-        }
+}
 
-        .item-price {
-            text-align: right;
+.item-price {
+    text-align: right;
             font-size: 13px;
             font-weight: 600;
             color: var(--text-dark);
-        }
+}
 
-        .item-total {
-            text-align: right;
+.item-total {
+    text-align: right;
             font-size: 13px;
             font-weight: 700;
             color: var(--primary-color);
-        }
+}
 
-        /* Order Summary */
+/* Order Summary */
         .order-summary {
-            display: flex;
+    display: flex;
             justify-content: flex-end;
             gap: 40px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
-        }
+}
 
-        .summary-item {
-            display: flex;
+.summary-item {
+    display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 4px;
-        }
+}
 
-        .summary-label {
-            font-size: 12px;
+.summary-label {
+    font-size: 12px;
             color: var(--text-light);
             font-weight: 600;
-        }
+}
 
-        .summary-value {
-            font-size: 13px;
+.summary-value {
+    font-size: 13px;
             font-weight: 700;
             color: var(--text-dark);
-        }
+}
 
-        .summary-total {
-            font-size: 16px;
+.summary-total {
+    font-size: 16px;
             color: var(--primary-color);
             font-weight: 700;
-        }
+}
 
-        /* Address & Timeline */
+/* Address & Timeline */
         .info-grid {
-            display: grid;
+    display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
-        }
+}
 
-        .info-box {
-            background-color: var(--white);
+.info-box {
+    background-color: var(--white);
             padding: 15px;
             border-radius: 4px;
-        }
+}
 
-        .info-title {
-            font-size: 13px;
+.info-title {
+    font-size: 13px;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 10px;
-        }
+}
 
-        .info-detail {
-            font-size: 12px;
+.info-detail {
+    font-size: 12px;
             color: var(--text-light);
             line-height: 1.6;
-        }
+}
 
-        /* Timeline */
+/* Timeline */
         .order-timeline {
-            background-color: var(--white);
+    background-color: var(--white);
             padding: 15px;
             border-radius: 4px;
-        }
+}
 
-        .timeline-items {
-            display: flex;
+.timeline-items {
+    display: flex;
             justify-content: space-between;
             position: relative;
-        }
+}
 
-        .timeline-items::before {
-            content: '';
+.timeline-items::before {
+    content: '';
             position: absolute;
             top: 20px;
             left: 0;
@@ -495,20 +350,20 @@
             height: 2px;
             background-color: var(--border-color);
             z-index: 0;
-        }
+}
 
-        .timeline-point {
-            display: flex;
+.timeline-point {
+    display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
             flex: 1;
             position: relative;
             z-index: 1;
-        }
+}
 
-        .timeline-dot {
-            width: 36px;
+.timeline-dot {
+    width: 36px;
             height: 36px;
             border-radius: 50%;
             background-color: var(--light-gray);
@@ -517,148 +372,55 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-        }
+}
 
-        .timeline-dot.completed {
-            background-color: var(--success-color);
+.timeline-dot.completed {
+    background-color: var(--success-color);
             border-color: var(--success-color);
             color: var(--white);
-        }
+}
 
-        .timeline-label {
-            font-size: 11px;
+.timeline-label {
+    font-size: 11px;
             text-align: center;
             color: var(--text-light);
             font-weight: 600;
-        }
+}
 
-        /* Action Buttons */
+/* Action Buttons */
         .order-actions {
-            display: flex;
+    display: flex;
             gap: 10px;
             flex-wrap: wrap;
-        }
+}
 
-        .btn {
-            padding: 8px 16px;
+.btn {
+    padding: 8px 16px;
             border: none;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
+}
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: #0052a3;
-        }
-
-        .btn-secondary {
-            background-color: var(--light-gray);
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--border-color);
-        }
-
-        .btn-small {
-            padding: 6px 12px;
+.btn-small {
+    padding: 6px 12px;
             font-size: 11px;
-        }
+}
 
-        /* Empty State */
+/* Empty State */
         .empty-state {
-            text-align: center;
+    text-align: center;
             padding: 60px 20px;
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+}
 
-        .empty-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .empty-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .empty-text {
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
-
-        .continue-shopping-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-
-        .continue-shopping-btn:hover {
-            background-color: #0052a3;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 40px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-section a {
-            display: block;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--white);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #444;
-            padding-top: 20px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* Responsive */
+/* Responsive */
         @media (max-width: 768px) {
-            .filter-section {
+    .filter-section {
                 flex-direction: column;
                 align-items: flex-start;
             }
@@ -698,53 +460,11 @@
             .timeline-items::before {
                 display: none;
             }
+}
+</style>
+@endsection
 
-            .header-top {
-                flex-wrap: wrap;
-                padding: 10px 20px;
-            }
-
-            .header-center {
-                order: 3;
-                flex-basis: 100%;
-                max-width: 100%;
-                margin: 10px 0 0 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <a href="index.html" class="logo">emox</a>
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>🔍</button>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="#" class="header-icon">
-                    <span class="icon">🌐</span>
-                    <span>English</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">❤️</span>
-                    <span>Wishlist</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">👤</span>
-                    <span>Sign In</span>
-                </a>
-                <a href="cart.html" class="header-icon">
-                    <span class="icon">🛒</span>
-                    <span>Cart</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
+@section("content")
     <!-- Main Container -->
     <div class="container">
         <!-- Page Header -->
@@ -770,43 +490,6 @@
             <!-- Orders will be loaded here -->
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <a href="#">About emox</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press</a>
-            </div>
-            <div class="footer-section">
-                <h4>Help & Support</h4>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping Info</a>
-                <a href="#">Returns</a>
-            </div>
-            <div class="footer-section">
-                <h4>Policies</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">Security</a>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 emox. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script>
         // Sample order data
@@ -1127,5 +810,4 @@
             renderOrders(allOrders);
         });
     </script>
-</body>
-</html>
+@endsection

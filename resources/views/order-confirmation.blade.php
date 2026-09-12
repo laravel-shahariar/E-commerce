@@ -1,232 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation - emox</title>
+@extends('template.basic')
+@section('title', 'Order Confirmation')
+@section('style')
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #00a8cc;
-            --success-color: #17a2b8;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 40px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-        }
-
-        .header-center {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-        }
-
-        .search-bar button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .header-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 12px;
-        }
-
-        .header-icon:hover {
-            color: var(--primary-color);
-        }
-
-        .icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        /* Success Banner */
+/* Success Banner */
         .success-banner {
-            background: linear-gradient(135deg, #17a2b8 0%, #0d5f6d 100%);
+    background: linear-gradient(135deg, #17a2b8 0%, #0d5f6d 100%);
             color: var(--white);
             border-radius: 8px;
             padding: 40px;
             margin-bottom: 30px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+}
 
-        .success-icon {
-            font-size: 60px;
+.success-icon {
+    font-size: 60px;
             margin-bottom: 15px;
-        }
+}
 
-        .success-title {
-            font-size: 28px;
+.success-title {
+    font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-        }
+}
 
-        .success-text {
-            font-size: 16px;
+.success-text {
+    font-size: 16px;
             opacity: 0.95;
-        }
+}
 
-        /* Order Details */
+/* Order Details */
         .order-details {
-            display: grid;
+    display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
-        }
+}
 
-        .detail-card {
-            background-color: var(--white);
+.detail-card {
+    background-color: var(--white);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+}
 
-        .detail-card-title {
-            font-size: 16px;
+.detail-card-title {
+    font-size: 16px;
             font-weight: 700;
             margin-bottom: 15px;
             padding-bottom: 12px;
             border-bottom: 2px solid var(--border-color);
-        }
+}
 
-        .detail-row {
-            display: flex;
+.detail-row {
+    display: flex;
             justify-content: space-between;
             margin-bottom: 12px;
             font-size: 14px;
-        }
+}
 
-        .detail-label {
-            color: var(--text-light);
+.detail-label {
+    color: var(--text-light);
             font-weight: 600;
-        }
+}
 
-        .detail-value {
-            color: var(--text-dark);
+.detail-value {
+    color: var(--text-dark);
             font-weight: 600;
-        }
+}
 
-        .order-number {
-            color: var(--primary-color);
+.order-number {
+    color: var(--primary-color);
             font-size: 16px;
             font-weight: 700;
-        }
+}
 
-        /* Order Status */
+/* Order Status */
         .order-status {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             padding: 30px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
-        }
+}
 
-        .status-title {
-            font-size: 18px;
+.status-title {
+    font-size: 18px;
             font-weight: 700;
             margin-bottom: 25px;
-        }
+}
 
-        .timeline {
-            position: relative;
+.timeline {
+    position: relative;
             padding: 20px 0;
-        }
+}
 
-        .timeline-item {
-            display: flex;
+.timeline-item {
+    display: flex;
             gap: 20px;
             margin-bottom: 30px;
             position: relative;
-        }
+}
 
-        .timeline-item:not(:last-child)::after {
-            content: '';
+.timeline-item:not(:last-child)::after {
+    content: '';
             position: absolute;
             left: 20px;
             top: 50px;
             width: 2px;
             height: 50px;
             background-color: var(--border-color);
-        }
+}
 
-        .timeline-dot {
-            width: 42px;
+.timeline-dot {
+    width: 42px;
             height: 42px;
             background-color: #e8f5e9;
             border: 3px solid var(--success-color);
@@ -236,68 +123,68 @@
             justify-content: center;
             flex-shrink: 0;
             font-size: 20px;
-        }
+}
 
-        .timeline-dot.active {
-            background-color: var(--success-color);
+.timeline-dot.active {
+    background-color: var(--success-color);
             color: var(--white);
-        }
+}
 
-        .timeline-dot.pending {
-            background-color: var(--light-gray);
+.timeline-dot.pending {
+    background-color: var(--light-gray);
             border-color: var(--border-color);
             color: var(--text-light);
-        }
+}
 
-        .timeline-content {
-            flex: 1;
+.timeline-content {
+    flex: 1;
             padding-top: 8px;
-        }
+}
 
-        .timeline-title {
-            font-size: 15px;
+.timeline-title {
+    font-size: 15px;
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 4px;
-        }
+}
 
-        .timeline-date {
-            font-size: 13px;
+.timeline-date {
+    font-size: 13px;
             color: var(--text-light);
-        }
+}
 
-        /* Order Items */
+/* Order Items */
         .order-items {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             padding: 30px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
-        }
+}
 
-        .items-title {
-            font-size: 18px;
+.items-title {
+    font-size: 18px;
             font-weight: 700;
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--border-color);
-        }
+}
 
-        .order-item {
-            display: grid;
+.order-item {
+    display: grid;
             grid-template-columns: 100px 1fr 100px 100px;
             gap: 20px;
             padding: 20px;
             border-bottom: 1px solid var(--border-color);
             align-items: center;
-        }
+}
 
-        .order-item:last-child {
-            border-bottom: none;
-        }
+.order-item:last-child {
+    border-bottom: none;
+}
 
-        .product-image {
-            width: 100px;
+.product-image {
+    width: 100px;
             height: 100px;
             background-color: var(--light-gray);
             border-radius: 4px;
@@ -305,180 +192,107 @@
             align-items: center;
             justify-content: center;
             font-size: 40px;
-        }
+}
 
-        .product-info {
-            display: flex;
+.product-info {
+    display: flex;
             flex-direction: column;
             gap: 8px;
-        }
+}
 
-        .product-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .product-sku {
-            font-size: 12px;
+.product-sku {
+    font-size: 12px;
             color: var(--text-light);
-        }
+}
 
-        .product-qty {
-            font-size: 14px;
+.product-qty {
+    font-size: 14px;
             color: var(--text-dark);
-        }
+}
 
-        .product-price {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .order-summary {
-            display: flex;
+.order-summary {
+    display: flex;
             justify-content: flex-end;
             gap: 40px;
             margin-top: 30px;
             padding-top: 20px;
             border-top: 2px solid var(--border-color);
-        }
+}
 
-        .summary-item {
-            text-align: right;
-        }
+.summary-item {
+    text-align: right;
+}
 
-        .summary-label {
-            font-size: 13px;
+.summary-label {
+    font-size: 13px;
             color: var(--text-light);
             margin-bottom: 4px;
-        }
+}
 
-        .summary-value {
-            font-size: 16px;
+.summary-value {
+    font-size: 16px;
             font-weight: 700;
             color: var(--text-dark);
-        }
+}
 
-        .summary-total {
-            background-color: var(--light-gray);
+.summary-total {
+    background-color: var(--light-gray);
             padding: 10px 20px;
             border-radius: 4px;
-        }
+}
 
-        .summary-total .summary-label {
-            font-size: 14px;
-        }
+.summary-total .summary-label {
+    font-size: 14px;
+}
 
-        .summary-total .summary-value {
-            font-size: 20px;
+.summary-total .summary-value {
+    font-size: 20px;
             color: var(--primary-color);
-        }
+}
 
-        /* Actions */
+/* Actions */
         .actions {
-            display: flex;
+    display: flex;
             gap: 15px;
             margin-top: 30px;
-        }
+}
 
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
+.btn-primary {
+    background-color: var(--primary-color);
             color: var(--white);
             flex: 1;
-        }
+}
 
-        .btn-primary:hover {
-            background-color: #0052a3;
-        }
-
-        .btn-secondary {
-            background-color: var(--light-gray);
+.btn-secondary {
+    background-color: var(--light-gray);
             color: var(--text-dark);
             border: 2px solid var(--border-color);
             flex: 1;
-        }
+}
 
-        .btn-secondary:hover {
-            background-color: var(--border-color);
-        }
-
-        /* Info Box */
+/* Info Box */
         .info-box {
-            background-color: #e3f2fd;
+    background-color: #e3f2fd;
             border-left: 4px solid var(--primary-color);
             padding: 15px 20px;
             border-radius: 4px;
             margin-bottom: 20px;
-        }
+}
 
-        .info-box-title {
-            font-weight: 600;
+.info-box-title {
+    font-weight: 600;
             color: var(--primary-color);
             margin-bottom: 5px;
-        }
+}
 
-        .info-box-text {
-            font-size: 13px;
+.info-box-text {
+    font-size: 13px;
             color: #0d5f6d;
-        }
+}
 
-        /* Footer */
-        footer {
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 40px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-section a {
-            display: block;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--white);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #444;
-            padding-top: 20px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* Responsive */
+/* Responsive */
         @media (max-width: 768px) {
-            .order-details {
+    .order-details {
                 grid-template-columns: 1fr;
             }
 
@@ -499,53 +313,11 @@
             .actions {
                 flex-direction: column;
             }
+}
+</style>
+@endsection
 
-            .header-top {
-                flex-wrap: wrap;
-                padding: 10px 20px;
-            }
-
-            .header-center {
-                order: 3;
-                flex-basis: 100%;
-                max-width: 100%;
-                margin: 10px 0 0 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <a href="index.html" class="logo">emox</a>
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>🔍</button>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="#" class="header-icon">
-                    <span class="icon">🌐</span>
-                    <span>English</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">❤️</span>
-                    <span>Wishlist</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">👤</span>
-                    <span>Sign In</span>
-                </a>
-                <a href="cart.html" class="header-icon">
-                    <span class="icon">🛒</span>
-                    <span>Cart</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
+@section('content')
     <!-- Main Container -->
     <div class="container">
         <!-- Success Banner -->
@@ -673,43 +445,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <a href="#">About emox</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press</a>
-            </div>
-            <div class="footer-section">
-                <h4>Help & Support</h4>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping Info</a>
-                <a href="#">Returns</a>
-            </div>
-            <div class="footer-section">
-                <h4>Policies</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">Security</a>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 emox. All rights reserved.</p>
-        </div>
-    </footer>
-
     <script>
         function loadOrder() {
             const orderData = JSON.parse(localStorage.getItem('lastOrder') || '{}');
@@ -794,5 +529,4 @@
 
         window.addEventListener('load', loadOrder);
     </script>
-</body>
-</html>
+@endsection

@@ -1,57 +1,348 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecommerce - Your Online Shopping Destination</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <a href="#" class="logo">Ecommerce</a>
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>Search</button>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="#" class="header-icon">
-                    <span class="icon">🌐</span>
-                    <span>English</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">❤️</span>
-                    <span>Wishlist</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">👤</span>
-                    <span>Sign In</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">🛒</span>
-                    <span>Cart</span>
-                </a>
-            </div>
-        </div>
+@extends('template.basic')
+@section('title', 'Home')
 
-        <!-- Navigation -->
-        <nav class="nav-categories">
-            <a href="#" class="active">All Categories</a>
-            <a href="#">Electronics</a>
-            <a href="#">Fashion</a>
-            <a href="#">Home & Decor</a>
-            <a href="#">Health & Beauty</a>
-            <a href="#">Sports</a>
-            <a href="#">Books</a>
-            <a href="#">Pharmacy</a>
-            <a href="#">Groceries</a>
-            <a href="#">Luxury Items</a>
-        </nav>
-    </header>
+@section("style")
+<style>
+    /* Navigation Categories */
+    .nav-categories {
+        display: flex;
+        gap: 30px;
+        padding: 15px 40px;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--border-color);
+    }
 
+    .nav-categories a {
+        text-decoration: none;
+        color: var(--text-dark);
+        font-size: 14px;
+        white-space: nowrap;
+        padding-bottom: 5px;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .nav-categories a:hover,
+    .nav-categories a.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+
+    /* Carousel */
+    .carousel {
+        position: relative;
+        margin-bottom: 40px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .carousel-container {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        border-radius: 8px;
+    }
+
+    .carousel-item {
+        min-width: 100%;
+        display: flex;
+        gap: 20px;
+    }
+
+    .carousel-slide {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px;
+        border-radius: 8px;
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .carousel-slide:nth-child(2) {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .carousel-slide:nth-child(3) {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .carousel-slide h2 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .carousel-slide p {
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .carousel-slide .btn {
+        align-self: flex-start;
+    }
+
+    .carousel-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+    }
+
+    .carousel-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .carousel-dot.active {
+        background-color: var(--white);
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        transition: background-color 0.3s ease;
+    }
+
+    .carousel-nav:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .carousel-nav.prev {
+        left: 10px;
+    }
+
+    .carousel-nav.next {
+        right: 10px;
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .section-header h3 {
+        font-size: 20px;
+        color: var(--text-dark);
+    }
+
+    .view-all {
+        text-decoration: none;
+        color: var(--primary-color);
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+
+    .view-all:hover {
+        color: var(--secondary-color);
+    }
+
+    /* Category Grid */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .category-card {
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .category-icon {
+        width: 100px;
+        height: 100px;
+        background-color: var(--light-gray);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        margin: 0 auto 10px;
+    }
+
+    .category-card p {
+        font-size: 14px;
+        color: var(--text-dark);
+    }
+
+    /* Product Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        background-color: var(--light-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-title {
+        font-size: 14px;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Featured Banners */
+    .banners-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .banner {
+        border-radius: 8px;
+        padding: 40px;
+        color: var(--white);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 200px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .banner h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    .banner p {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .banner-1 {
+        background: linear-gradient(135deg, rgba(200, 100, 200, 0.8), rgba(100, 50, 150, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-size="60">🥬</text></svg>');
+    }
+
+    .banner-2 {
+        background: linear-gradient(135deg, rgba(0, 100, 200, 0.8), rgba(50, 150, 200, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-size="60">📱</text></svg>');
+    }
+
+    .banner-3 {
+        background: linear-gradient(135deg, rgba(200, 0, 0, 0.8), rgba(150, 50, 0, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" dominant-baseline="middle" text-anchor="middle" font-size="60">🛍️</text></svg>');
+    }
+
+    /* Button */
+    .btn {
+        display: inline-block;
+        padding: 10px 25px;
+        background-color: var(--primary-color);
+        color: var(--white);
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #0052a3;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .nav-categories {
+            padding: 10px 20px;
+            gap: 15px;
+        }
+
+        .carousel-slide {
+            padding: 20px;
+        }
+
+        .carousel-slide h2 {
+            font-size: 20px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        .container {
+            padding: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .logo {
+            font-size: 18px;
+        }
+
+        .header-right {
+            gap: 10px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .categories-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+@endsection
+
+@section('navigation')                   
+<!-- Navigation -->
+<nav class="nav-categories">
+    <a href="#" class="active">All Categories</a>
+    <a href="#">Electronics</a>
+    <a href="#">Fashion</a>
+    <a href="#">Home & Decor</a>
+    <a href="#">Health & Beauty</a>
+    <a href="#">Sports</a>
+    <a href="#">Books</a>
+    <a href="#">Pharmacy</a>
+    <a href="#">Groceries</a>
+    <a href="#">Luxury Items</a>
+</nav>
+@endsection
+
+@section('content')
     <!-- Main Container -->
     <div class="container">
         <!-- Carousel -->
@@ -169,44 +460,5 @@
             <!-- Beauty & Health products will be generated by JavaScript -->
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <a href="#">About emox</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press</a>
-            </div>
-            <div class="footer-section">
-                <h4>Help & Support</h4>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping Info</a>
-                <a href="#">Returns</a>
-            </div>
-            <div class="footer-section">
-                <h4>Policies</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">Security</a>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 emox. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="{{ url('js/app.js') }}"></script>
-</body>
-</html>
+@endsection
+    

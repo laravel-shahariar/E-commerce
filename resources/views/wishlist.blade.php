@@ -1,253 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist - emox</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #00a8cc;
-            --success-color: #17a2b8;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 40px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-        }
-
-        .header-center {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-        }
-
-        .search-bar button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .header-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 12px;
-        }
-
-        .header-icon:hover {
-            color: var(--primary-color);
-        }
-
-        .icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .wishlist-count {
-            background-color: var(--light-gray);
+@extends("template.basic")
+@section("title", "Wishlist")
+@section("style")
+<style>
+.wishlist-count {
+    background-color: var(--light-gray);
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
             color: var(--text-dark);
-        }
+}
 
-        /* Filter Section */
-        .filter-section {
-            background-color: var(--white);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-label {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .sort-select {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .view-toggle {
-            display: flex;
+.view-toggle {
+    display: flex;
             gap: 8px;
             margin-left: auto;
-        }
+}
 
-        .view-btn {
-            padding: 8px 12px;
+.view-btn {
+    padding: 8px 12px;
             border: 1px solid var(--border-color);
             background-color: var(--white);
             cursor: pointer;
             border-radius: 4px;
             font-size: 14px;
             transition: all 0.3s ease;
-        }
+}
 
-        .view-btn.active {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-        }
-
-        /* Wishlist Grid */
+/* Wishlist Grid */
         .wishlist-grid {
-            display: grid;
+    display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
-        }
+}
 
-        .wishlist-grid.list-view {
-            grid-template-columns: 1fr;
-        }
+.wishlist-grid.list-view {
+    grid-template-columns: 1fr;
+}
 
-        /* Product Card */
+/* Product Card */
         .product-card {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-        }
+}
 
-        .product-card:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
+.product-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
 
-        .list-view .product-card {
-            display: flex;
+.list-view .product-card {
+    display: flex;
             gap: 20px;
-        }
+}
 
-        .product-image {
-            width: 100%;
-            height: 200px;
-            background-color: var(--light-gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            position: relative;
-        }
-
-        .list-view .product-image {
-            width: 150px;
+.list-view .product-image {
+    width: 150px;
             height: 150px;
             flex-shrink: 0;
             font-size: 40px;
-        }
+}
 
-        .product-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--danger-color);
-            color: var(--white);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .wishlist-btn {
-            position: absolute;
+.wishlist-btn {
+    position: absolute;
             top: 10px;
             left: 10px;
             width: 36px;
@@ -261,88 +79,37 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-        }
+}
 
-        .wishlist-btn:hover {
-            transform: scale(1.1);
-        }
+.wishlist-btn:hover {
+    transform: scale(1.1);
+}
 
-        .product-info {
-            padding: 15px;
-        }
-
-        .list-view .product-info {
-            padding: 20px;
+.list-view .product-info {
+    padding: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
+}
 
-        .product-title {
-            font-size: 14px;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            font-weight: 600;
-        }
-
-        .list-view .product-title {
-            font-size: 16px;
+.list-view .product-title {
+    font-size: 16px;
             -webkit-line-clamp: unset;
-        }
+}
 
-        .product-rating {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
+.list-view .price {
+    font-size: 18px;
+}
 
-        .star {
-            color: var(--warning-color);
-        }
-
-        .product-price {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .list-view .price {
-            font-size: 18px;
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .discount {
-            color: var(--danger-color);
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .product-actions {
-            display: flex;
+.product-actions {
+    display: flex;
             gap: 8px;
             flex-wrap: wrap;
-        }
+}
 
-        .btn {
-            flex: 1;
+.btn {
+    flex: 1;
             padding: 10px;
             border: none;
             border-radius: 4px;
@@ -350,82 +117,32 @@
             font-size: 12px;
             font-weight: 600;
             transition: all 0.3s ease;
-        }
+}
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: #0052a3;
-        }
-
-        .btn-secondary {
-            background-color: var(--light-gray);
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--border-color);
-        }
-
-        .btn-danger {
-            padding: 8px;
+.btn-danger {
+    padding: 8px;
             background: none;
             border: none;
             color: var(--danger-color);
             font-size: 14px;
-        }
+}
 
-        .btn-danger:hover {
-            color: #bd2130;
-        }
+.btn-danger:hover {
+    color: #bd2130;
+}
 
-        /* Empty State */
+/* Empty State */
         .empty-state {
-            text-align: center;
+    text-align: center;
             padding: 80px 20px;
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+}
 
-        .empty-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .empty-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .empty-text {
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
-
-        .continue-shopping-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-
-        .continue-shopping-btn:hover {
-            background-color: #0052a3;
-        }
-
-        /* Actions Bar */
+/* Actions Bar */
         .actions-bar {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -433,54 +150,11 @@
             gap: 15px;
             justify-content: flex-end;
             flex-wrap: wrap;
-        }
+}
 
-        /* Footer */
-        footer {
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 40px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-section a {
-            display: block;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--white);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #444;
-            padding-top: 20px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* Responsive */
+/* Responsive */
         @media (max-width: 768px) {
-            .page-header {
+    .page-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
@@ -512,53 +186,11 @@
             .actions-bar {
                 flex-direction: column;
             }
+}
+</style>
+@endsection
 
-            .header-top {
-                flex-wrap: wrap;
-                padding: 10px 20px;
-            }
-
-            .header-center {
-                order: 3;
-                flex-basis: 100%;
-                max-width: 100%;
-                margin: 10px 0 0 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <a href="index.html" class="logo">emox</a>
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>🔍</button>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="#" class="header-icon">
-                    <span class="icon">🌐</span>
-                    <span>English</span>
-                </a>
-                <a href="wishlist.html" class="header-icon">
-                    <span class="icon">❤️</span>
-                    <span>Wishlist</span>
-                </a>
-                <a href="#" class="header-icon">
-                    <span class="icon">👤</span>
-                    <span>Account</span>
-                </a>
-                <a href="cart.html" class="header-icon">
-                    <span class="icon">🛒</span>
-                    <span>Cart</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
+@section("content")
     <!-- Main Container -->
     <div class="container">
         <!-- Page Header -->
@@ -596,43 +228,6 @@
             <button class="btn btn-danger" onclick="clearWishlist()">Clear Wishlist</button>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <a href="#">About emox</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press</a>
-            </div>
-            <div class="footer-section">
-                <h4>Help & Support</h4>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping Info</a>
-                <a href="#">Returns</a>
-            </div>
-            <div class="footer-section">
-                <h4>Policies</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">Security</a>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 emox. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script>
         // Sample wishlist data
@@ -863,5 +458,4 @@
             renderWishlist(currentItems);
         });
     </script>
-</body>
-</html>
+@endsection

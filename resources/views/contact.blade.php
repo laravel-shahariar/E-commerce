@@ -1,181 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - emox</title>
+@extends('template.basic')
+@section('title', 'Contact Us')
+@section('style')
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #00a8cc;
-            --success-color: #17a2b8;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-gray: #f8f9fa;
-            --border-color: #dee2e6;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 40px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-decoration: none;
-        }
-
-        .header-center {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
-        }
-
-        .search-bar {
-            display: flex;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .search-bar input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            outline: none;
-        }
-
-        .search-bar button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            cursor: pointer;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .header-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 12px;
-        }
-
-        .header-icon:hover {
-            color: var(--primary-color);
-        }
-
-        .icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Container */
+/* Container */
         .container {
-            max-width: 1200px;
+    max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
-        }
+}
 
-        /* Page Title */
+/* Page Title */
         .page-title {
-            text-align: center;
+    text-align: center;
             margin-bottom: 50px;
-        }
+}
 
-        .page-title h1 {
-            font-size: 36px;
+.page-title h1 {
+    font-size: 36px;
             font-weight: 700;
             margin-bottom: 10px;
             color: var(--text-dark);
-        }
+}
 
-        .page-title p {
-            font-size: 16px;
+.page-title p {
+    font-size: 16px;
             color: var(--text-light);
-        }
+}
 
-        /* Contact Methods */
+/* Contact Methods */
         .contact-methods {
-            display: grid;
+    display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
             margin-bottom: 50px;
-        }
+}
 
-        .contact-card {
-            background-color: var(--white);
+.contact-card {
+    background-color: var(--white);
             border-radius: 8px;
             padding: 30px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-        }
+}
 
-        .contact-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.contact-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transform: translateY(-5px);
-        }
+}
 
-        .contact-icon {
-            font-size: 48px;
+.contact-icon {
+    font-size: 48px;
             margin-bottom: 15px;
-        }
+}
 
-        .contact-title {
-            font-size: 18px;
+.contact-title {
+    font-size: 18px;
             font-weight: 700;
             margin-bottom: 10px;
             color: var(--text-dark);
-        }
+}
 
-        .contact-info {
-            font-size: 14px;
+.contact-info {
+    font-size: 14px;
             color: var(--text-light);
             line-height: 1.8;
             margin-bottom: 15px;
-        }
+}
 
-        .contact-link {
-            display: inline-block;
+.contact-link {
+    display: inline-block;
             padding: 10px 20px;
             background-color: var(--primary-color);
             color: var(--white);
@@ -184,146 +78,101 @@
             font-weight: 600;
             font-size: 13px;
             transition: background-color 0.3s ease;
-        }
+}
 
-        .contact-link:hover {
-            background-color: #0052a3;
-        }
+.contact-link:hover {
+    background-color: #0052a3;
+}
 
-        /* Contact Form Section */
+/* Contact Form Section */
         .form-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 8px;
             padding: 50px;
             color: var(--white);
             margin-bottom: 50px;
-        }
+}
 
-        .form-section h2 {
-            font-size: 28px;
+.form-section h2 {
+    font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-        }
+}
 
-        .form-section p {
-            font-size: 14px;
+.form-section p {
+    font-size: 14px;
             opacity: 0.9;
             margin-bottom: 30px;
-        }
+}
 
-        /* Form */
+/* Form */
         .contact-form {
-            background-color: var(--white);
+    background-color: var(--white);
             border-radius: 8px;
             padding: 40px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+}
 
-        .form-group {
-            margin-bottom: 25px;
-        }
+.form-group {
+    margin-bottom: 25px;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-dark);
-        }
-
-        .form-row {
-            display: grid;
+.form-row {
+    display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
-        }
+}
 
-        .form-group input,
+.form-group input,
         .form-group select,
         .form-group textarea {
-            width: 100%;
+    width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 14px;
             font-family: inherit;
             transition: all 0.3s ease;
-        }
+}
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
+.form-group textarea {
+    resize: vertical;
             min-height: 120px;
-        }
+}
 
-        .form-actions {
-            display: flex;
+.form-actions {
+    display: flex;
             gap: 15px;
-        }
+}
 
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: #0052a3;
-        }
-
-        .btn-secondary {
-            background-color: var(--light-gray);
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--border-color);
-        }
-
-        /* FAQ Section */
+/* FAQ Section */
         .faq-section {
-            margin-top: 50px;
-        }
+    margin-top: 50px;
+}
 
-        .faq-title {
-            font-size: 24px;
+.faq-title {
+    font-size: 24px;
             font-weight: 700;
             margin-bottom: 30px;
             text-align: center;
             color: var(--text-dark);
-        }
+}
 
-        .faq-grid {
-            display: grid;
+.faq-grid {
+    display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
-        }
+}
 
-        .faq-card {
-            background-color: var(--white);
+.faq-card {
+    background-color: var(--white);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+}
 
-        .faq-question {
-            padding: 20px;
+.faq-question {
+    padding: 20px;
             background-color: var(--light-gray);
             cursor: pointer;
             font-weight: 600;
@@ -332,99 +181,43 @@
             align-items: center;
             user-select: none;
             transition: all 0.3s ease;
-        }
+}
 
-        .faq-question:hover {
-            background-color: #e3f2fd;
-        }
+.faq-question:hover {
+    background-color: #e3f2fd;
+}
 
-        .faq-toggle {
-            font-size: 20px;
+.faq-toggle {
+    font-size: 20px;
             transition: transform 0.3s ease;
-        }
+}
 
-        .faq-toggle.open {
-            transform: rotate(180deg);
-        }
+.faq-toggle.open {
+    transform: rotate(180deg);
+}
 
-        .faq-answer {
-            padding: 0;
+.faq-answer {
+    padding: 0;
             max-height: 0;
             overflow: hidden;
             transition: all 0.3s ease;
             background-color: var(--white);
-        }
+}
 
-        .faq-answer.open {
-            padding: 20px;
+.faq-answer.open {
+    padding: 20px;
             max-height: 500px;
-        }
+}
 
-        .faq-answer-text {
-            color: var(--text-light);
+.faq-answer-text {
+    color: var(--text-light);
             font-size: 14px;
             line-height: 1.8;
-        }
+}
 
-        /* Footer */
-        footer {
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 40px 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-section a {
-            display: block;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--white);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #444;
-            padding-top: 20px;
-            text-align: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .success-message {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            padding: 15px 20px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        /* Responsive */
+/* Responsive */
         @media (max-width: 768px) {
-            .form-row {
+    .form-row {
                 grid-template-columns: 1fr;
             }
 
@@ -439,53 +232,11 @@
             .faq-grid {
                 grid-template-columns: 1fr;
             }
+}
+</style>
+@endsection
 
-            .header-top {
-                flex-wrap: wrap;
-                padding: 10px 20px;
-            }
-
-            .header-center {
-                order: 3;
-                flex-basis: 100%;
-                max-width: 100%;
-                margin: 10px 0 0 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-top">
-            <a href="index.html" class="logo">emox</a>
-            <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>🔍</button>
-                </div>
-            </div>
-            <div class="header-right">
-                <a href="#" class="header-icon">
-                    <span class="icon">🌐</span>
-                    <span>English</span>
-                </a>
-                <a href="wishlist.html" class="header-icon">
-                    <span class="icon">❤️</span>
-                    <span>Wishlist</span>
-                </a>
-                <a href="account.html" class="header-icon">
-                    <span class="icon">👤</span>
-                    <span>Account</span>
-                </a>
-                <a href="cart.html" class="header-icon">
-                    <span class="icon">🛒</span>
-                    <span>Cart</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
+@section("content")
     <!-- Main Container -->
     <div class="container">
         <!-- Page Title -->
@@ -687,43 +438,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>About Us</h4>
-                <a href="#">About emox</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press</a>
-            </div>
-            <div class="footer-section">
-                <h4>Help & Support</h4>
-                <a href="#">Contact Us</a>
-                <a href="#">FAQ</a>
-                <a href="#">Shipping Info</a>
-                <a href="#">Returns</a>
-            </div>
-            <div class="footer-section">
-                <h4>Policies</h4>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-                <a href="#">Security</a>
-            </div>
-            <div class="footer-section">
-                <h4>Follow Us</h4>
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">YouTube</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 emox. All rights reserved.</p>
-        </div>
-    </footer>
-
     <script>
         function submitForm(event) {
             event.preventDefault();
@@ -749,5 +463,4 @@
             toggle.classList.toggle('open');
         }
     </script>
-</body>
-</html>
+@endsection
