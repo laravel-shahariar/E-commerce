@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') | E-commerce</title>
+    <title>@yield('title') | Ecommerce</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @yield('style')
 </head>
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <a href="#" class="header-icon">
+                <a href="/wishlist" class="header-icon">
                     <span class="icon">❤️</span>
                     <span>Wishlist</span>
                 </a>
@@ -72,7 +72,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 E-commerce. All rights reserved.</p>
+            <p>&copy; 2026 Ecommerce. All rights reserved.</p>
         </div>
     </footer>
 
