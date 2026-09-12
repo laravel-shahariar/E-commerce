@@ -220,30 +220,30 @@
 }
 
 /* Responsive */
-        @media (max-width: 768px) {
-    .main-layout {
-                grid-template-columns: 1fr;
-            }
+@media (max-width: 768px) {
+.main-layout {
+    grid-template-columns: 1fr;
+}
 
-            .sidebar {
-                position: static;
-            }
+.sidebar {
+    position: static;
+}
 
-            .page-header {
-                flex-direction: column;
+.page-header {
+    flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
-            }
+}
 
-            .sort-section {
-                flex-direction: column;
+.sort-section {
+    flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
-            }
+}
 
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+.products-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
 }
 </style>
 @endsection

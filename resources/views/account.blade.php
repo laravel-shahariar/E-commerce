@@ -280,30 +280,30 @@
 }
 
 /* Responsive */
-        @media (max-width: 768px) {
-    .account-layout {
-                grid-template-columns: 1fr;
-            }
+@media (max-width: 768px) {
+.account-layout {
+    grid-template-columns: 1fr;
+}
 
             .form-row {
                 grid-template-columns: 1fr;
-            }
+}
 
-            .address-grid {
-                grid-template-columns: 1fr;
-            }
-
-
+.address-grid {
+    grid-template-columns: 1fr;
+}
 
 
 
-            .button-group {
-                flex-direction: column;
-            }
 
-            .btn {
-                width: 100%;
-            }
+
+.button-group {
+    flex-direction: column;
+}
+
+.btn {
+    width: 100%;
+}
 }
 </style>
 @endsection

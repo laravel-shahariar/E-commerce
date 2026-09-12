@@ -207,7 +207,7 @@
 
 /* Responsive */
         @media (max-width: 768px) {
-    .cart-layout {
+            .cart-layout {
                 grid-template-columns: 1fr;
             }
 
@@ -225,7 +225,7 @@
             .cart-item > :nth-child(n+3) {
                 display: none;
             }
-}
+        }
 </style>
 @endsection
 
