@@ -1,4 +1,4 @@
-<div class="product-card">
+<a href="{{ $link1 ?? '#' }}" class="product-card" style="text-decoration: none; color: inherit; display: block;">
     <div class="product-image">
         <img src="{{ asset('/photo/' . $photo1) }}" alt="{{ $title1 }}">
         <span class="product-badge">-{{ $discount1 }}%</span>
@@ -15,4 +15,4 @@
             @endif
         </div>
     </div>
-</div>
+</a>

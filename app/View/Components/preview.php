@@ -8,8 +8,8 @@ use Illuminate\View\Component;
 
 class preview extends Component
 {
-    public $photo1, $title1, $discount1, $review1, $price1, $original_price1;
-    public function __construct($photo, $title, $discount, $review, $price, $originalPrice = null)
+    public $photo1, $title1, $discount1, $review1, $price1, $original_price1, $link1;
+    public function __construct($photo, $title, $discount, $review, $price, $originalPrice = null, $link = '#')
     {
         $this->photo1 = $photo;
         $this->title1 = $title;
@@ -17,6 +17,7 @@ class preview extends Component
         $this->review1 = $review;
         $this->price1 = $price;
         $this->original_price1 = $originalPrice;
+        $this->link1 = $link;
     }
 
     /**

@@ -2,22 +2,6 @@
 @section('title', 'Category')
 @section('style')
     <style>
-/* Breadcrumb */
-        .breadcrumb {
-    margin-bottom: 25px;
-            font-size: 13px;
-}
-
-.breadcrumb a {
-    color: var(--primary-color);
-            text-decoration: none;
-}
-
-.breadcrumb span {
-    color: var(--text-light);
-            margin: 0 5px;
-}
-
 /* Page Header */
         .page-header {
     background-color: var(--white);
@@ -240,27 +224,33 @@
                 align-items: flex-start;
                 gap: 12px;
 }
-
-.products-grid {
-    grid-template-columns: repeat(2, 1fr);
-}
 }
 </style>
 @endsection
+
+@section('navigation')                   
+<!-- Navigation -->
+<nav class="nav-categories">
+    <a href="/category/all" class="active">All Categories</a>
+    <a href="/category/electronics">Electronics</a>
+    <a href="/category/fashion">Fashion</a>
+    <a href="/category/home-decor">Home & Decor</a>
+    <a href="/category/health-beauty">Health & Beauty</a>
+    <a href="/category/sports">Sports</a>
+    <a href="/category/books">Books</a>
+    <a href="/category/pharmacy">Pharmacy</a>
+    <a href="/category/groceries">Groceries</a>
+    <a href="/category/luxury-items">Luxury Items</a>
+</nav>
+@endsection
+
 @section('content')
     <!-- Container -->
     <div class="container">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-            <a href="index.html">Home</a>
-            <span>/</span>
-            <span>Electronics</span>
-        </div>
-
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">📱 Electronics</h1>
+                <h1 class="page-title">{{ $category_name == "all" ? "All Categories" : ucWords($category_name) }}</h1>
                 <div class="products-count">Showing 24 products</div>
             </div>
         </div>

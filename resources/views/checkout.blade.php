@@ -222,17 +222,6 @@
     background-color: #0052a3;
 }
 
-.security-badge {
-    display: flex;
-            gap: 8px;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #2e7d32;
-}
-
 /* Responsive */
         @media (max-width: 768px) {
     .checkout-layout {
@@ -435,11 +424,6 @@
                 </div>
 
                 <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
-
-                <div class="security-badge">
-                    <span>🔒</span>
-                    <span>Secure encrypted payment</span>
-                </div>
             </div>
         </div>
     </div>
@@ -530,8 +514,8 @@
             localStorage.setItem('lastOrder', JSON.stringify(orderData));
             localStorage.removeItem('cartItems');
 
-            // Redirect to order confirmation
-            window.location.href = 'order-confirmation.html';
+            // Redirect to order confirmation 
+            window.location.href = '/order-confirm';
         }
 
         window.addEventListener('load', loadCart);

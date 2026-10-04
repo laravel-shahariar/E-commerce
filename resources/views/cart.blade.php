@@ -190,42 +190,97 @@
             cursor: not-allowed;
 }
 
-.security-info {
-    display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #e3f2fd;
-            border-radius: 4px;
-            font-size: 11px;
-            color: var(--text-dark);
-}
-
 .security-icon {
     font-size: 16px;
 }
 
 /* Responsive */
-        @media (max-width: 768px) {
-            .cart-layout {
-                grid-template-columns: 1fr;
-            }
+@media (max-width: 768px) {
+    .cart-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 
-            .order-summary {
-                position: static;
-            }
+    .order-summary {
+        position: static;
+    }
 
-            .cart-header,
-            .cart-item {
-                grid-template-columns: 80px 1fr;
-                gap: 15px;
-            }
+    .cart-header {
+        display: none;
+    }
 
-            .cart-header > :nth-child(n+3),
-            .cart-item > :nth-child(n+3) {
-                display: none;
-            }
-        }
+    .cart-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        grid-template-areas:
+            "image details remove"
+            "image price price"
+            "quantity quantity total";
+        gap: 10px 15px;
+        padding: 15px;
+        align-items: center;
+    }
+
+    .product-image-cart {
+        grid-area: image;
+        width: 80px;
+        height: 80px;
+        font-size: 35px;
+    }
+
+    .product-details {
+        grid-area: details;
+    }
+
+    .remove-btn {
+        grid-area: remove;
+        justify-self: end;
+        align-self: start;
+    }
+
+    .product-price {
+        grid-area: price;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .quantity-control {
+        grid-area: quantity;
+        display: flex;
+        align-items: center;
+    }
+
+    .item-total {
+        grid-area: total;
+        text-align: right;
+        font-size: 15px;
+        font-weight: 700;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-item {
+        grid-template-columns: 65px 1fr auto;
+        padding: 12px;
+        gap: 8px 10px;
+    }
+
+    .product-image-cart {
+        width: 65px;
+        height: 65px;
+        font-size: 28px;
+    }
+
+    .product-name {
+        font-size: 14px;
+    }
+
+    .product-price,
+    .item-total {
+        font-size: 13px;
+    }
+}
 </style>
 @endsection
 
@@ -276,11 +331,6 @@
                 <button class="checkout-btn" id="checkoutBtn" onclick="proceedToCheckout()">
                     Proceed to Checkout
                 </button>
-
-                <div class="security-info">
-                    <span class="security-icon">🔒</span>
-                    <span>Your payment is secure and encrypted</span>
-                </div>
             </div>
         </div>
     </div>
@@ -404,7 +454,7 @@
                 alert('Your cart is empty!');
                 return;
             }
-            window.location.href = 'checkout.html';
+            window.location.href = '/checkout';
         }
 
         // Load cart on page load

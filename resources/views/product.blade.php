@@ -469,8 +469,8 @@
             <div class="product-layout">
                 <!-- Product Images -->
                 <div class="product-images">
-                    <div class="main-image" id="mainImage">
-                        📱
+                    <div class="overflow-hidden main-image" id="mainImage">
+                        <img src="{{ asset('/photo/p' . $product_id . '.jpg') }}" alt="">
                         <span class="product-badge">-20%</span>
                     </div>
                     <div class="thumbnail-gallery">

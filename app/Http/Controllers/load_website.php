@@ -11,9 +11,9 @@ class load_website extends Controller
         return view('home');
     }
 
-    function product()
+    function product($product_id)
     {
-        return view('product');
+        return view('product', compact('product_id'));
     }
 
     function cart()
@@ -41,9 +41,9 @@ class load_website extends Controller
         return view('account');
     }
 
-    function category()
+    function category($category_name)
     {
-        return view('category');
+        return view('category', compact('category_name'));
     }
 
     function wishlist()
