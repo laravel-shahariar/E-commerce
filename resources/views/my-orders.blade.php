@@ -778,8 +778,7 @@
         }
 
         function viewOrderDetails(orderNumber) {
-            alert(`Viewing details for ${orderNumber}`);
-            window.location.href = `order-confirmation.html?order=${orderNumber}`;
+            window.location.href = `order-confirm?order=${orderNumber}`;
         }
 
         function trackOrder(orderNumber) {
@@ -797,7 +796,7 @@
                     emoji: item.emoji
                 }));
                 localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                window.location.href = 'cart.html';
+                window.location.href = '/cart';
             }
         }
 

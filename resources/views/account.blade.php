@@ -447,7 +447,7 @@
                     
                     <div style="text-align: center; padding: 40px; background-color: var(--light-gray); border-radius: 8px;">
                         <p style="margin-bottom: 20px;">View all your orders in one place</p>
-                        <a href="my-orders.html" class="btn btn-primary">Go to My Orders</a>
+                        <a href="/orders" class="btn btn-primary">Go to My Orders</a>
                     </div>
                 </section>
 
@@ -624,8 +624,7 @@
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                alert('You have been logged out successfully');
-                window.location.href = 'index.html';
+                window.location.href = '/';
             }
         }
     </script>

@@ -543,10 +543,6 @@
                         <button class="btn btn-secondary" onclick="buyNow()">Buy Now</button>
                         <button class="btn btn-wishlist" onclick="addToWishlist()">♡</button>
                     </div>
-
-                    <div style="padding: 15px; background-color: #e3f2fd; border-radius: 4px; font-size: 13px; color: var(--text-dark);">
-                        <strong>Secure Transaction:</strong> Your payment information is encrypted and secure with us.
-                    </div>
                 </div>
             </div>
 
