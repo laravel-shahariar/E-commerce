@@ -252,9 +252,9 @@
                 <div class="contact-title">Phone Support</div>
                 <div class="contact-info">
                     Call us Mon-Fri, 9 AM - 6 PM EST<br>
-                    <strong>+1-800-EMOX-123</strong>
+                    <strong>+880-[PHONE]</strong>
                 </div>
-                <a href="tel:1-800-369-6123" class="contact-link">Call Now</a>
+                <a href="tel:+8801955141999" class="contact-link">Call Now</a>
             </div>
 
             <div class="contact-card">
@@ -262,9 +262,9 @@
                 <div class="contact-title">Email Support</div>
                 <div class="contact-info">
                     We'll respond within 24 hours<br>
-                    <strong>support@emox.com</strong>
+                    <strong>[EMAIL_ADDRESS]</strong>
                 </div>
-                <a href="mailto:support@emox.com" class="contact-link">Send Email</a>
+                <a href="mailto:[EMAIL_ADDRESS]" class="contact-link">Send Email</a>
             </div>
 
             <div class="contact-card">

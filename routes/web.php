@@ -1,15 +1,20 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\load_website;
 
-Route::get('/', [load_website::class, 'home']);
-Route::get('/product/{product}', [load_website::class, 'product']);
-Route::get('/cart', [load_website::class, 'cart'])->name('cart');
-Route::get('/account', [load_website::class, 'account'])->name('account');
-Route::get('/category/{category}', [load_website::class, 'category']);
-Route::get('/checkout', [load_website::class, 'checkout']);
-Route::get('/order-confirm', [load_website::class, 'order_confirm']);
-Route::get('/orders', [load_website::class, 'orders']);
-Route::get('/wishlist', [load_website::class, 'wishlist']);
-Route::get('/contact', [load_website::class, 'contact']);
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';

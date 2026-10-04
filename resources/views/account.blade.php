@@ -315,8 +315,8 @@
             <aside class="sidebar">
                 <div class="user-profile">
                     <div class="user-avatar">👤</div>
-                    <div class="user-name">John Doe</div>
-                    <div class="user-email">john@example.com</div>
+                    <div class="user-name">Shahariar</div>
+                    <div class="user-email">email@example.com</div>
                 </div>
 
                 <nav class="sidebar-menu">
@@ -542,7 +542,7 @@
                     </div>
 
                     <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--danger-color);">Danger Zone</h3>
+                        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--danger-color);">Nice Zone</h3>
                         <p style="color: var(--text-light); margin-bottom: 15px; font-size: 13px;">Permanently delete your account and all associated data</p>
                         <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
                     </div>
