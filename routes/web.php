@@ -19,14 +19,30 @@ Route::get('/google/login', function () {
     return Socialite::driver('google')->redirect();
 })->name('google.auth');
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 Route::get('/google/callback', function () {
     $user = Socialite::driver('google')->user();
 
     // user detail 
-
-
-    
-    dd($user);
+    $aa = User::where('google_id', $user->id)->first();
+    if($aa){
+        Auth::login($aa);
+        return redirect()->route('dashboard');
+    }else{
+        $new_user = User::create([
+            'name' => $user->name,
+            'email' => $user->email,
+            'password' => bcrypt("kdalkiew;akd-3!!"),
+            'google_id' => $user->id,
+        ]);
+        if($new_user) {
+            Auth::login($new_user);
+            return redirect()->route('dashboard');
+        }else {
+            return redirect()->route('login')->with('error', 'Something went wrong');
+        }
+    }
 });
 
 
