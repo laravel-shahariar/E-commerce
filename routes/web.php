@@ -46,9 +46,34 @@ Route::get('/google/callback', function () {
 });
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(["auth", "verified"])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard.home');
+    })->name('dashboard');
+
+    Route::get("/dashboard/product", function () {
+        return view("dashboard.product");
+    })->name("dashboard.product");
+
+    Route::get("/dashboard/product/details", function () {
+        return view("dashboard.product-detail");
+    });
+
+    Route::get("/dashboard/order", function () {
+        return view("dashboard.order");
+    })->name("dashboard.order");
+
+    Route::get("/dashboard/order/details", function () {
+        return view("dashboard.order-detail");
+    });
+
+    Route::get("/dashboard/customer", function () {
+        return view("dashboard.customer");
+    })->name("dashboard.customer");
+
+
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
