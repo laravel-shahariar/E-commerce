@@ -335,8 +335,12 @@
                     <a class="sidebar-link" onclick="showSection('security')">
                         <span>🔒</span> Security
                     </a>
-                    <a class="sidebar-link" onclick="logout()">
-                        <span>🚪</span> Logout
+                    <a class="sidebar-link">
+                        <span>🚪</span> 
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <span onclick="event.preventDefault(); this.closest('form').submit();">Log Out</span>
+                        </form>
                     </a>
                 </nav>
             </aside>
@@ -349,46 +353,20 @@
                     <div class="success-message" id="successMessage">✓ Profile updated successfully!</div>
                     
                     <form onsubmit="updateProfile(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>First Name *</label>
-                                <input type="text" value="John" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Last Name *</label>
-                                <input type="text" value="Doe" required>
-                            </div>
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" value="{{ Auth::user()->name }}" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Email Address *</label>
-                                <input type="email" value="john@example.com" required>
+                                <input type="email" value="{{ Auth::user()->email }}" required>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number *</label>
                                 <input type="tel" value="+91 98765 43210" required>
                             </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Date of Birth</label>
-                                <input type="date" value="1990-01-15">
-                            </div>
-                            <div class="form-group">
-                                <label>Gender</label>
-                                <select>
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Bio</label>
-                            <textarea rows="4" placeholder="Tell us about yourself...">Love shopping for quality products online!</textarea>
                         </div>
 
                         <div class="button-group">
@@ -619,12 +597,6 @@
         function deleteAccount() {
             if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
                 alert('Account deletion request submitted. Please check your email to confirm.');
-            }
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '/';
             }
         }
     </script>

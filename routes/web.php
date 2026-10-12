@@ -4,20 +4,20 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\load_website;
-
 Route::get('/', [load_website::class, 'home']);
 Route::get('/product/{product}', [load_website::class, 'product']);
 Route::get('/cart', [load_website::class, 'cart'])->name('cart');
-Route::get('/account', [load_website::class, 'account'])->name('account');
 Route::get('/category/{category}', [load_website::class, 'category']);
 Route::get('/checkout', [load_website::class, 'checkout']);
-Route::get('/order-confirm', [load_website::class, 'order_confirm']);
-Route::get('/orders', [load_website::class, 'orders']);
+
+
 
 use Laravel\Socialite\Socialite;
 Route::get('/google/login', function () {
     return Socialite::driver('google')->redirect();
 })->name('google.auth');
+
+
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +48,10 @@ Route::get('/google/callback', function () {
 
 
 Route::middleware(["auth", "verified"])->group(function () {
+    Route::get('/account', [load_website::class, 'account'])->name('account');
+    Route::get('/orders', [load_website::class, 'orders']);
+    Route::get('/order-confirm', [load_website::class, 'order_confirm']);
+
     Route::get('/dashboard', function () {
         return view('dashboard.home');
     })->name('dashboard');
@@ -71,8 +75,6 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::get("/dashboard/customer", function () {
         return view("dashboard.customer");
     })->name("dashboard.customer");
-
-
 });
 
 Route::middleware('auth')->group(function () {

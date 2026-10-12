@@ -28,9 +28,12 @@
             <span class="sidebar-link-icon">⚙️</span>
             <span>Settings</span>
         </a>
-        <a href="#" class="sidebar-link" onclick="logout()">
+        <a href="#" class="sidebar-link">
             <span class="sidebar-link-icon">🚪</span>
-            <span>Logout</span>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <span onclick="event.preventDefault(); this.closest('form').submit();">Log Out</span>
+            </form>
         </a>
     </nav>
 </aside>
