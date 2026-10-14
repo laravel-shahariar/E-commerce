@@ -59,9 +59,8 @@ Route::middleware(["auth", "verified"])->group(function () {
         return view("dashboard.product");
     })->name("dashboard.product");
 
-    Route::get("/dashboard/product/add", function () {
-        return view("dashboard.product-add");
-    })->name("dashboard.product.add");
+    Route::get("/dashboard/product/add", [DashboardController::class, "productAdd"])->name("dashboard.product.add");
+    Route::post("/dashboard/product/add", [DashboardController::class, "productStore"])->name("dashboard.product.store");
 
     Route::get("/dashboard/product/edit/{product}", function () {
         return view("dashboard.product-detail");
