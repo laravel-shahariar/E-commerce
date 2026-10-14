@@ -2,310 +2,263 @@
 @section('title', 'My Account')
 @section('style')
     <style>
-/* Layout */
+    /* Layout */
+    .account-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 30px;
+    }
+    /* Sidebar */
+    .sidebar {
+        background-color: var(--white);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+    }
+    .user-profile {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 20px;
+    }
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 15px;
+    }
+    .user-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+    .user-email {
+        font-size: 12px;
+        color: var(--text-light);
+    }
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .sidebar-link {
+        padding: 12px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: var(--text-dark);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+        background-color: #e3f2fd;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    /* Main Content */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    .content-section {
+        background-color: var(--white);
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    .content-section.active {
+        display: block;
+    }
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--border-color);
+    }
+    .btn-danger {
+        background-color: var(--danger-color);
+        color: var(--white);
+    }
+    .btn-danger:hover {
+        background-color: #bd2130;
+    }
+    .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    /* Address Cards */
+    .address-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .address-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    .address-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .address-card.default {
+        border-color: var(--primary-color);
+        background-color: #e3f2fd;
+    }
+    .address-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .address-type {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 12px;
+    }
+    .address-detail {
+        font-size: 13px;
+        color: var(--text-light);
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+    .address-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .address-action-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        background: none;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .address-action-btn:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    .add-button {
+        padding: 40px 20px;
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .add-button:hover {
+        border-color: var(--primary-color);
+        background-color: #e3f2fd;
+    }
+    .add-button-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    /* Settings */
+    .settings-group {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .settings-group-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 15px;
+    }
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .setting-item:last-child {
+        border-bottom: none;
+    }
+    .setting-label {
+        font-size: 13px;
+        color: var(--text-dark);
+    }
+    .setting-description {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-top: 4px;
+    }
+    .toggle-switch {
+        width: 50px;
+        height: 26px;
+        background-color: var(--light-gray);
+        border: 2px solid var(--border-color);
+        border-radius: 13px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    .toggle-switch.active {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+    }
+    .toggle-slider {
+        width: 20px;
+        height: 20px;
+        background-color: var(--white);
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s ease;
+    }
+    .toggle-switch.active .toggle-slider {
+        left: 26px;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
         .account-layout {
-    display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
-}
-
-/* Sidebar */
-        .sidebar {
-    background-color: var(--white);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-}
-
-.user-profile {
-    text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
-}
-
-.user-avatar {
-    width: 80px;
-            height: 80px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 15px;
-}
-
-.user-name {
-    font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-}
-
-.user-email {
-    font-size: 12px;
-            color: var(--text-light);
-}
-
-.sidebar-menu {
-    display: flex;
-            flex-direction: column;
-            gap: 8px;
-}
-
-.sidebar-link {
-    padding: 12px 15px;
-            border-radius: 4px;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-}
-
-.sidebar-link:hover,
-        .sidebar-link.active {
-    background-color: #e3f2fd;
-            color: var(--primary-color);
-            font-weight: 600;
-}
-
-/* Main Content */
-        .main-content {
-    display: flex;
-            flex-direction: column;
-            gap: 30px;
-}
-
-.content-section {
-    background-color: var(--white);
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: none;
-}
-
-.content-section.active {
-    display: block;
-}
-
-.section-title {
-    font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-            color: var(--white);
-}
-
-.btn-danger:hover {
-    background-color: #bd2130;
-}
-
-.button-group {
-    display: flex;
-            gap: 15px;
-            margin-top: 30px;
-}
-
-/* Address Cards */
+            grid-template-columns: 1fr;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+        }
         .address-grid {
-    display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-}
+            grid-template-columns: 1fr;
+        }
+        .button-group {
+            flex-direction: column;
+        }
+        .btn {
+            width: 100%;
+        }
+    }
 
-.address-card {
-    border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            position: relative;
-            transition: all 0.3s ease;
-}
-
-.address-card:hover {
-    border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.address-card.default {
-    border-color: var(--primary-color);
-            background-color: #e3f2fd;
-}
-
-.address-badge {
-    position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-}
-
-.address-type {
-    font-size: 13px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 12px;
-}
-
-.address-detail {
-    font-size: 13px;
-            color: var(--text-light);
-            line-height: 1.8;
-            margin-bottom: 15px;
-}
-
-.address-actions {
-    display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-}
-
-.address-action-btn {
-    padding: 6px 12px;
-            font-size: 12px;
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-}
-
-.address-action-btn:hover {
-    border-color: var(--primary-color);
-            color: var(--primary-color);
-}
-
-.add-button {
-    padding: 40px 20px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-}
-
-.add-button:hover {
-    border-color: var(--primary-color);
-            background-color: #e3f2fd;
-}
-
-.add-button-text {
-    font-size: 14px;
-            font-weight: 600;
-            color: var(--primary-color);
-}
-
-/* Settings */
-        .settings-group {
-    border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-}
-
-.settings-group-title {
-    font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 15px;
-}
-
-.setting-item {
-    display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-}
-
-.setting-item:last-child {
-    border-bottom: none;
-}
-
-.setting-label {
-    font-size: 13px;
-            color: var(--text-dark);
-}
-
-.setting-description {
-    font-size: 12px;
-            color: var(--text-light);
-            margin-top: 4px;
-}
-
-.toggle-switch {
-    width: 50px;
-            height: 26px;
-            background-color: var(--light-gray);
-            border: 2px solid var(--border-color);
-            border-radius: 13px;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-}
-
-.toggle-switch.active {
-    background-color: var(--success-color);
-            border-color: var(--success-color);
-}
-
-.toggle-slider {
-    width: 20px;
-            height: 20px;
-            background-color: var(--white);
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: left 0.3s ease;
-}
-
-.toggle-switch.active .toggle-slider {
-    left: 26px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-.account-layout {
-    grid-template-columns: 1fr;
-}
-
-            .form-row {
-                grid-template-columns: 1fr;
-}
-
-.address-grid {
-    grid-template-columns: 1fr;
-}
-
-
-
-
-
-.button-group {
-    flex-direction: column;
-}
-
-.btn {
-    width: 100%;
-}
-}
-</style>
+    </style>
 @endsection
 @section('content')
     <!-- Main Container -->
@@ -315,8 +268,8 @@
             <aside class="sidebar">
                 <div class="user-profile">
                     <div class="user-avatar">👤</div>
-                    <div class="user-name">Shahariar</div>
-                    <div class="user-email">email@example.com</div>
+                    <div class="user-name">{{ Auth::user()->name }}</div>
+                    <div class="user-email">{{ Auth::user()->email }}</div>
                 </div>
 
                 <nav class="sidebar-menu">
@@ -350,28 +303,36 @@
                 <!-- Profile Section -->
                 <section id="profile" class="content-section active">
                     <h2 class="section-title">👤 My Profile</h2>
-                    <div class="success-message" id="successMessage">✓ Profile updated successfully!</div>
+
+                    @if (session('status') === 'profile-updated')
+                        <div class="success-message">✓ Profile updated successfully!</div>
+                    @endif
                     
-                    <form onsubmit="updateProfile(event)">
-                        <div class="form-group">
-                            <label>Name *</label>
-                            <input type="text" value="{{ Auth::user()->name }}" required>
+                    <form method="POST" action="{{ route('profile.update') }}">
+                        @csrf
+                        @method('patch')
+
+                        <div class="form-group" style="margin-bottom: 20px">
+                            <label>Name</label>
+                            <input type="text" name="name" value="{{ Auth::user()->name }}" required>
+                            <x-input-error class="mt-2" :messages="$errors->get('name')" />
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Email Address *</label>
-                                <input type="email" value="{{ Auth::user()->email }}" required>
+                            <div class="form-group" style="margin-bottom: 20px">
+                                <label>Email Address</label>
+                                <input type="email" name="email" value="{{ Auth::user()->email }}" required>
+                                <x-input-error class="mt-2" :messages="$errors->get('email')" />
                             </div>
-                            <div class="form-group">
-                                <label>Phone Number *</label>
-                                <input type="tel" value="+91 98765 43210" required>
+                            <div class="form-group" style="margin-bottom: 20px">
+                                <label>Phone Number</label>
+                                <input type="tel" name="phone_number" value="{{ Auth::user()->phone_number }}" required>
+                                <x-input-error class="mt-2" :messages="$errors->get('phone_number')" />
                             </div>
                         </div>
 
                         <div class="button-group">
                             <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="reset" class="btn btn-secondary">Cancel</button>
                         </div>
                     </form>
                 </section>
@@ -494,7 +455,7 @@
                     <div style="margin-bottom: 30px;">
                         <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px;">Password</h3>
                         <p style="color: var(--text-light); margin-bottom: 15px; font-size: 13px;">Your password was last changed 3 months ago</p>
-                        <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                        <a href="{{ route('profile.edit') }}" class="btn btn-primary">Change Password</a>
                     </div>
 
                     <div style="margin-bottom: 30px;">
@@ -522,7 +483,7 @@
                     <div style="margin-bottom: 30px;">
                         <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--danger-color);">Nice Zone</h3>
                         <p style="color: var(--text-light); margin-bottom: 15px; font-size: 13px;">Permanently delete your account and all associated data</p>
-                        <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                        <button class="btn btn-danger">Delete Account</button>
                     </div>
                 </section>
             </div>
@@ -551,53 +512,8 @@
             window.scrollTo(0, 0);
         }
 
-        function updateProfile(event) {
-            event.preventDefault();
-            const successMessage = document.getElementById('successMessage');
-            successMessage.classList.add('show');
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 3000);
-        }
-
-        function addNewAddress() {
-            alert('Add New Address dialog would open here');
-        }
-
-        function editAddress() {
-            alert('Edit Address dialog would open here');
-        }
-
-        function setDefault() {
-            alert('Address set as default!');
-        }
-
-        function deleteAddress() {
-            if (confirm('Are you sure you want to delete this address?')) {
-                alert('Address deleted successfully!');
-            }
-        }
-
         function toggleSetting(element) {
             element.classList.toggle('active');
-        }
-
-        function changePassword() {
-            alert('Change Password dialog would open here');
-        }
-
-        function enable2FA() {
-            alert('Enable Two-Factor Authentication dialog would open here');
-        }
-
-        function viewAllActivity() {
-            alert('Login activity history would be displayed here');
-        }
-
-        function deleteAccount() {
-            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                alert('Account deletion request submitted. Please check your email to confirm.');
-            }
         }
     </script>
 @endsection
