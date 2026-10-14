@@ -435,7 +435,7 @@
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Products</h1>
-            <button class="add-btn">+ Add Product</button>
+            <a href="{{ route('dashboard.product.add') }}" class="add-btn" style="text-decoration: none;">+ Add Product</a>
         </div>
 
         <!-- Filters -->
@@ -466,7 +466,7 @@
                         <span class="product-stock">45 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -483,7 +483,7 @@
                         <span class="product-stock">32 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -500,7 +500,7 @@
                         <span class="product-stock low">8 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -517,7 +517,7 @@
                         <span class="product-stock">22 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -534,7 +534,7 @@
                         <span class="product-stock">56 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -551,7 +551,7 @@
                         <span class="product-stock">89 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -568,7 +568,7 @@
                         <span class="product-stock">120 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>
@@ -585,7 +585,7 @@
                         <span class="product-stock">45 in stock</span>
                     </div>
                     <div class="product-actions">
-                        <a href="/dashboard/product/details" class="action-icon" title="Edit Product">✎</a>
+                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
                         <button class="action-icon">👁</button>
                         <button class="action-icon">🗑</button>
                     </div>

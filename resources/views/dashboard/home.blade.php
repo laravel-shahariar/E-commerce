@@ -548,7 +548,6 @@
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Dashboard</h1>
-            <input type="date" class="date-selector">
         </div>
 
         <!-- Stats Grid -->
@@ -679,13 +678,6 @@
             const sidebar = document.getElementById('sidebar');
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('active');
-            }
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                alert('Logging out...');
-                window.location.href = 'modern-index.html';
             }
         }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\load_website;
@@ -52,17 +53,19 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::get('/orders', [load_website::class, 'orders']);
     Route::get('/order-confirm', [load_website::class, 'order_confirm']);
 
-    Route::get('/dashboard', function () {
-        return view('dashboard.home');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, "home"])->name('dashboard');
 
     Route::get("/dashboard/product", function () {
         return view("dashboard.product");
     })->name("dashboard.product");
 
-    Route::get("/dashboard/product/details", function () {
+    Route::get("/dashboard/product/add", function () {
+        return view("dashboard.product-add");
+    })->name("dashboard.product.add");
+
+    Route::get("/dashboard/product/edit/{product}", function () {
         return view("dashboard.product-detail");
-    });
+    })->name("dashboard.product.edit");
 
     Route::get("/dashboard/order", function () {
         return view("dashboard.order");
