@@ -26,16 +26,6 @@ return new class extends Migration
             $table->boolean('is_default')->default(false);
         });
 
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('set null');
-        });
-
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -44,9 +34,9 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->decimal('discount_price', 10, 2)->nullable();
             $table->integer('stock')->default(0);
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
-            $table->foreignId('size_id')->nullable()->constrained('sizes')->onDelete('set null');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('brand_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('size_id')->nullable()->constrained()->onDelete('set null');
             $table->string('image')->nullable();
             $table->json('images')->nullable();
             $table->enum('status', ['draft', 'active', 'inactive'])->default('active');
@@ -54,22 +44,11 @@ return new class extends Migration
             $table->integer('sold_count')->default(0);
         });
 
-        Schema::create('brands', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('image')->nullable();
-        });
-
-        Schema::create('sizes', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-        });
-
         Schema::create("orders", function(Blueprint $table){
             $table->id();
             $table->timestamps();
             $table->foreignId("user_id")->constrained()->cascadeOnDelete();
-            $table->foreignId("address_id")->constrained()->cascadeOnDelete();
+            $table->foreignId("address_id")->constrained("address")->cascadeOnDelete();
             $table->enum("status", ["pending", "processing", "shipped", "delivered", "cancelled"])->default("pending");
             $table->decimal("total_price", 10, 2);
             $table->decimal("delivery_charge", 10, 2);
@@ -103,5 +82,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('address');
+        Schema::dropIfExists('products');
+        Schema::dropIfExists('orders');
+        Schema::dropIfExists('order_items');
     }
 };
