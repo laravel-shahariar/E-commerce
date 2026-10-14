@@ -43,3 +43,7 @@ class UserFactory extends Factory
         ]);
     }
 }
+
+
+// php artisan make:factory ProductFactory 
+// php artisan db:seed --class=ProductSeeder

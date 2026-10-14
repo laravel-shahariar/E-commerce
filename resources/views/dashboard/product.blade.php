@@ -1,3 +1,7 @@
+@php
+    use App\Models\product;
+    $products = $products ?? product::with(['category', 'brand'])->latest()->paginate(20);
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,6 +309,93 @@
             color: var(--accent);
         }
 
+        /* Pagination */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .pagination-links {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: var(--secondary);
+            color: var(--gray-900);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(.disabled):not(.active) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--gray-100);
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .page-btn.disabled {
+            color: var(--gray-400);
+            border-color: var(--gray-200);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .empty-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--secondary);
+            border: 1px dashed var(--gray-300);
+            border-radius: 8px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtitle {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -433,6 +524,12 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        @if (session('success'))
+            <div style="background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; padding: 12px 18px; border-radius: 6px; margin-bottom: 20px; font-size: 14px;">
+                ✓ {{ session('success') }}
+            </div>
+        @endif
+
         <div class="page-header">
             <h1 class="page-title">Products</h1>
             <a href="{{ route('dashboard.product.add') }}" class="add-btn" style="text-decoration: none;">+ Add Product</a>
@@ -456,142 +553,75 @@
 
         <!-- Products Grid -->
         <div class="products-grid">
-            <div class="product-card">
-                <div class="product-image">👗</div>
-                <div class="product-info">
-                    <div class="product-name">Elegant Dress</div>
-                    <div class="product-sku">SKU: LUX-001</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹4,999</span>
-                        <span class="product-stock">45 in stock</span>
+            @forelse ($products as $product)
+                <div class="product-card">
+                    <div class="product-image">
+                        @if ($product->image && file_exists(public_path('photo/' . $product->image)))
+                            <img src="{{ asset('photo/' . $product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @elseif ($product->image && file_exists(public_path($product->image)))
+                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @elseif ($product->image && (filter_var($product->image, FILTER_VALIDATE_URL) || str_starts_with($product->image, 'http')))
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <span>{{ $product->image ?: '👗' }}</span>
+                        @endif
                     </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">👔</div>
-                <div class="product-info">
-                    <div class="product-name">Premium Blazer</div>
-                    <div class="product-sku">SKU: LUX-002</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹6,499</span>
-                        <span class="product-stock">32 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
+                    <div class="product-info">
+                        <div class="product-name" title="{{ $product->name }}">{{ $product->name }}</div>
+                        <div class="product-sku">SKU: LUX-{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}</div>
+                        <div class="product-meta">
+                            <span class="product-price">₹{{ number_format($product->price, 0) }}</span>
+                            <span class="product-stock {{ $product->stock < 10 ? 'low' : '' }}">{{ $product->stock }} in stock</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{{ route('dashboard.product.edit', $product->id) }}" class="action-icon" title="Edit Product">✎</a>
+                            <button class="action-icon" title="View Product">👁</button>
+                            <button class="action-icon" title="Delete Product">🗑</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">👠</div>
-                <div class="product-info">
-                    <div class="product-name">Designer Shoes</div>
-                    <div class="product-sku">SKU: LUX-003</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹5,299</span>
-                        <span class="product-stock low">8 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
+            @empty
+                <div class="empty-products">
+                    <div class="empty-icon">📦</div>
+                    <div class="empty-title">No products found</div>
+                    <div class="empty-subtitle">Get started by creating your first product in the store catalog.</div>
+                    <a href="{{ route('dashboard.product.add') }}" class="add-btn" style="text-decoration: none; display: inline-block;">+ Add Product</a>
                 </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">👜</div>
-                <div class="product-info">
-                    <div class="product-name">Luxury Handbag</div>
-                    <div class="product-sku">SKU: LUX-004</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹8,899</span>
-                        <span class="product-stock">22 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">⌚</div>
-                <div class="product-info">
-                    <div class="product-name">Smart Watch</div>
-                    <div class="product-sku">SKU: LUX-005</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹3,999</span>
-                        <span class="product-stock">56 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">😎</div>
-                <div class="product-info">
-                    <div class="product-name">Sunglasses</div>
-                    <div class="product-sku">SKU: LUX-006</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹2,499</span>
-                        <span class="product-stock">89 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">👕</div>
-                <div class="product-info">
-                    <div class="product-name">Classic T-Shirt</div>
-                    <div class="product-sku">SKU: LUX-007</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹1,499</span>
-                        <span class="product-stock">120 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">🧣</div>
-                <div class="product-info">
-                    <div class="product-name">Silk Scarf</div>
-                    <div class="product-sku">SKU: LUX-008</div>
-                    <div class="product-meta">
-                        <span class="product-price">₹2,999</span>
-                        <span class="product-stock">45 in stock</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ route('dashboard.product.edit', 1) }}" class="action-icon" title="Edit Product">✎</a>
-                        <button class="action-icon">👁</button>
-                        <button class="action-icon">🗑</button>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
+
+        <!-- Pagination -->
+        @if ($products->hasPages())
+            <div class="pagination-wrapper">
+                <div class="pagination-info">
+                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} products
+                </div>
+                <div class="pagination-links">
+                    {{-- Previous Page Link --}}
+                    @if ($products->onFirstPage())
+                        <span class="page-btn disabled">&laquo; Prev</span>
+                    @else
+                        <a href="{{ $products->previousPageUrl() }}" class="page-btn">&laquo; Prev</a>
+                    @endif
+
+                    {{-- Pagination Numbers --}}
+                    @foreach ($products->getUrlRange(max(1, $products->currentPage() - 2), min($products->lastPage(), $products->currentPage() + 2)) as $page => $url)
+                        @if ($page == $products->currentPage())
+                            <span class="page-btn active">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="page-btn">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if ($products->hasMorePages())
+                        <a href="{{ $products->nextPageUrl() }}" class="page-btn">Next &raquo;</a>
+                    @else
+                        <span class="page-btn disabled">Next &raquo;</span>
+                    @endif
+                </div>
+            </div>
+        @endif
     </main>
 
     <!-- Footer -->
