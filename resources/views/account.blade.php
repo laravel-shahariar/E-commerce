@@ -483,7 +483,7 @@
                     <div style="margin-bottom: 30px;">
                         <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--danger-color);">Nice Zone</h3>
                         <p style="color: var(--text-light); margin-bottom: 15px; font-size: 13px;">Permanently delete your account and all associated data</p>
-                        <button class="btn btn-danger">Delete Account</button>
+                        <a href="{{ route('profile.edit') }}" class="btn btn-danger">Delete Account</a>
                     </div>
                 </section>
             </div>
