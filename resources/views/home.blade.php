@@ -375,11 +375,17 @@
             <a href="#" class="view-all">View All ></a>
         </div>
         <div class="products-grid" id="productsGrid">
-            <x-preview link="/product/1" photo="p1.jpg" title="This is p1 Photo" discount="10" review="3" price="555" />
-            <x-preview link="/product/2" photo="p2.jpg" title="This is p1 Photo" discount=15 review=32 price=725 original-price=999 />
-            <x-preview link="/product/3" photo="p3.jpg" title="This is p1 Photo" discount=19 review=32 price=880 original-price=1003 />
-            <x-preview link="/product/4" photo="p6.jpg" title="This is p1 Photo" discount=40 review=32 price=2093 original-price=3290 />
-            <x-preview link="/product/5" photo="p5.jpg" title="This is p1 Photo" discount=25 review=32 price=77 original-price=193 />
+            @foreach($products as $product)
+                <x-preview
+                    :link="url('/product/' . $product->id)"
+                    :photo="$product->image"
+                    :title="$product->name"
+                    :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
+                    :review="$product->reviews ?? 0"
+                    :price="$product->price"
+                    :original_price="$product->discount_price ? $product->price : null"
+                />
+            @endforeach
         </div>
 
         <!-- Featured Banners -->
@@ -407,11 +413,17 @@
             <a href="#" class="view-all">View All ></a>
         </div>
         <div class="products-grid" id="winterWearGrid">
-            <x-preview link="/product/1" photo="p1.jpg" title="This is p1 Photo" discount="10" review="3" price="555" />
-            <x-preview link="/product/2" photo="p2.jpg" title="This is p1 Photo" discount=15 review=32 price=725 original-price=999 />
-            <x-preview link="/product/3" photo="p3.jpg" title="This is p1 Photo" discount=19 review=32 price=880 original-price=1003 />
-            <x-preview link="/product/4" photo="p4.jpg" title="This is p1 Photo" discount=40 review=32 price=2093 original-price=3290 />
-            <x-preview link="/product/5" photo="p5.jpg" title="This is p1 Photo" discount=25 review=32 price=77 original-price=193 />
+            @foreach($products as $product)
+                <x-preview
+                    :link="url('/product/' . $product->id)"
+                    :photo="$product->image"
+                    :title="$product->name"
+                    :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
+                    :review="$product->reviews ?? 0"
+                    :price="$product->price"
+                    :original_price="$product->discount_price ? $product->price : null"
+                />
+            @endforeach
         </div>
 
         <!-- Top Deals Electronics -->
@@ -420,11 +432,17 @@
             <a href="#" class="view-all">View All ></a>
         </div>
         <div class="products-grid" id="electronicsGrid">
-            <x-preview link="/product/6" photo="p6.jpg" title="This is p1 Photo" discount=25 review=32 price=77 original-price=193 />
-            <x-preview link="/product/1" photo="p1.jpg" title="This is p1 Photo" discount="10" review="3" price="555" />
-            <x-preview link="/product/2" photo="p2.jpg" title="This is p1 Photo" discount=15 review=32 price=725 original-price=999 />
-            <x-preview link="/product/3" photo="p3.jpg" title="This is p1 Photo" discount=19 review=32 price=880 original-price=1003 />
-            <x-preview link="/product/4" photo="p4.jpg" title="This is p1 Photo" discount=40 review=32 price=2093 original-price=3290 />
+            @foreach($products as $product)
+                <x-preview
+                    :link="url('/product/' . $product->id)"
+                    :photo="$product->image"
+                    :title="$product->name"
+                    :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
+                    :review="$product->reviews ?? 0"
+                    :price="$product->price"
+                    :original_price="$product->discount_price ? $product->price : null"
+                />
+            @endforeach
         </div>
 
         <!-- Best Sellers Beauty & Health -->
@@ -433,11 +451,17 @@
             <a href="#" class="view-all">View All ></a>
         </div>
         <div class="products-grid" id="beautyHealthGrid">
-            <x-preview link="/product/1" photo="p1.jpg" title="This is p1 Photo" discount="10" review="3" price="555" />
-            <x-preview link="/product/2" photo="p2.jpg" title="This is p1 Photo" discount=15 review=32 price=725 original-price=999 />
-            <x-preview link="/product/3" photo="p3.jpg" title="This is p1 Photo" discount=19 review=32 price=880 original-price=1003 />
-            <x-preview link="/product/4" photo="p4.jpg" title="This is p1 Photo" discount=40 review=32 price=2093 original-price=3290 />
-            <x-preview link="/product/5" photo="p5.jpg" title="This is p1 Photo" discount=25 review=32 price=77 original-price=193 />
+            @foreach($products as $product)
+                <x-preview
+                    :link="url('/product/' . $product->id)"
+                    :photo="$product->image"
+                    :title="$product->name"
+                    :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
+                    :review="$product->reviews ?? 0"
+                    :price="$product->price"
+                    :original_price="$product->discount_price ? $product->price : null"
+                />
+            @endforeach
         </div>
     </div>
 

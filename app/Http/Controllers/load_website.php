@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\product;
 
 class load_website extends Controller
 {
     function home()
     {
-        return view('home');
+        $products = product::take(5)->inRandomOrder()->get();
+        return view('home', compact('products'));
     }
 
     function product($product_id)
