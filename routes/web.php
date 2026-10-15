@@ -62,9 +62,8 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::get("/dashboard/product/add", [DashboardController::class, "productAdd"])->name("dashboard.product.add");
     Route::post("/dashboard/product/add", [DashboardController::class, "productStore"])->name("dashboard.product.store");
 
-    Route::get("/dashboard/product/edit/{product}", function () {
-        return view("dashboard.product-detail");
-    })->name("dashboard.product.edit");
+    Route::get("/dashboard/product/edit/{product}", [DashboardController::class, "productEdit"])->name("dashboard.product.edit");
+    Route::match(["post", "put"], "/dashboard/product/edit/{product}", [DashboardController::class, "productUpdate"])->name("dashboard.product.update");
 
     Route::get("/dashboard/order", function () {
         return view("dashboard.order");

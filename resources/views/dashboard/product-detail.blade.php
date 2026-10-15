@@ -399,13 +399,24 @@
         /* Status Badge */
         .status-badge-preview {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             background: #e6f9f0;
             color: #00b377;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge-preview.draft {
+            background: #fff8e6;
+            color: #d97706;
+        }
+
+        .status-badge-preview.inactive {
+            background: #fee2e2;
+            color: #dc2626;
         }
 
         /* Checkbox & Radio */
@@ -545,7 +556,7 @@
         <div class="navbar">
             <div class="navbar-left">
                 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-                <a href="/dashboard/product" class="back-btn" title="Back to Products">←</a>
+                <a href="{{ route('dashboard.product') }}" class="back-btn" title="Back to Products">←</a>
                 <div class="navbar-title">Product Details</div>
             </div>
             <div class="navbar-right">
@@ -556,199 +567,201 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Header with actions -->
-        <div class="product-edit-header">
-            <div class="product-title-section">
-                <h1>Edit Product</h1>
-                <div class="product-meta">SKU: LUX-001 &bull; Created: Oct 1, 2024 &bull; Last updated: Today</div>
+        <!-- Error Alerts -->
+        @if (isset($errors) && $errors->any())
+            <div style="background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; padding: 14px 18px; border-radius: 6px; margin-bottom: 25px; font-size: 14px;">
+                <strong>Please correct the following errors:</strong>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <div class="header-actions">
-                <a href="/dashboard/product" class="btn btn-secondary">Cancel</a>
-                <button type="button" class="btn btn-primary" onclick="showSaveMessage()">Update Product</button>
+        @endif
+
+        @if (session('success'))
+            <div style="background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; padding: 14px 18px; border-radius: 6px; margin-bottom: 25px; font-size: 14px;">
+                ✓ {{ session('success') }}
             </div>
-        </div>
+        @endif
 
-        <!-- Form Layout Grid -->
-        <div class="form-grid">
-            <!-- Left Column: Primary Details -->
-            <div>
-                <!-- Basic Information Card -->
-                <div class="card">
-                    <div class="card-title">📝 Basic Information</div>
+        <form id="productUpdateForm" action="{{ route('dashboard.product.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-                    <div class="form-group">
-                        <label for="product-name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="product-name" class="form-control" value="Elegant Dress" placeholder="Enter product title">
+            <!-- Header with actions -->
+            <div class="product-edit-header">
+                <div class="product-title-section">
+                    <h1>Edit Product #{{ $product->id }}</h1>
+                    <div class="product-meta">
+                        SKU: LUX-{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }} &bull;
+                        Created: {{ $product->created_at ? $product->created_at->format('M d, Y') : 'N/A' }} &bull;
+                        Last updated: {{ $product->updated_at ? $product->updated_at->diffForHumans() : 'N/A' }}
                     </div>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ route('dashboard.product') }}" class="btn btn-secondary">Back to Products</a>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                </div>
+            </div>
 
-                    <div class="form-group">
-                        <label for="product-description">Description</label>
-                        <textarea id="product-description" class="form-control" rows="5" placeholder="Enter product description">Crafted from premium Italian silk blend, this elegant evening dress features an asymmetrical neckline with subtle pleating and a flowing floor-length silhouette. Ideal for black-tie galas and special occasions.</textarea>
-                        <div class="form-hint">Provide a detailed description highlighting craftsmanship and materials.</div>
-                    </div>
+            <!-- Form Layout Grid -->
+            <div class="form-grid">
+                <!-- Left Column: Primary Details -->
+                <div>
+                    <!-- Basic Information Card -->
+                    <div class="card">
+                        <div class="card-title">📝 Basic Information</div>
 
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="product-category">Category <span class="required">*</span></label>
-                            <select id="product-category" class="form-control">
-                                <option value="fashion" selected>Fashion & Apparel</option>
-                                <option value="footwear">Footwear & Shoes</option>
-                                <option value="accessories">Luxury Accessories</option>
-                                <option value="jewelry">Watches & Fine Jewelry</option>
+                            <label for="product-name">Product Name <span class="required">*</span></label>
+                            <input type="text" id="product-name" name="name" class="form-control" value="{{ old('name', $product->name) }}" placeholder="Enter product title" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="product-description">Description</label>
+                            <textarea id="product-description" name="description" class="form-control" rows="5" placeholder="Enter product description">{{ old('description', $product->description) }}</textarea>
+                            <div class="form-hint">Provide a detailed description highlighting craftsmanship, materials, and features.</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="product-category">Category <span class="required">*</span></label>
+                                <select id="product-category" name="category_id" class="form-control" required>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-brand">Brand / Designer</label>
+                                <select id="product-brand" name="brand_id" class="form-control">
+                                    <option value="">None / Independent</option>
+                                    @foreach ($brands as $brand)
+                                        <option value="{{ $brand->id }}" {{ old('brand_id', $product->brand_id) == $brand->id ? 'selected' : '' }}>
+                                            {{ $brand->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="product-size">Size Option</label>
+                            <select id="product-size" name="size_id" class="form-control">
+                                <option value="">Standard / One Size</option>
+                                @foreach ($sizes as $size)
+                                    <option value="{{ $size->id }}" {{ old('size_id', $product->size_id) == $size->id ? 'selected' : '' }}>
+                                        Size {{ $size->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="product-brand">Brand / Designer</label>
-                            <input type="text" id="product-brand" class="form-control" value="LUXORA Atelier">
+                    </div>
+
+                    <!-- Media / Images Card -->
+                    <div class="card">
+                        <div class="card-title">🖼️ Product Media</div>
+                        @if ($product->image)
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px;">Current Image:</label>
+                                <div style="display: inline-block; padding: 4px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fff;">
+                                    @if (file_exists(public_path('photo/' . $product->image)))
+                                        <img src="{{ asset('photo/' . $product->image) }}" alt="{{ $product->name }}" style="max-height: 120px; border-radius: 6px; display: block; object-fit: cover;">
+                                    @elseif (file_exists(public_path($product->image)))
+                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" style="max-height: 120px; border-radius: 6px; display: block; object-fit: cover;">
+                                    @elseif (filter_var($product->image, FILTER_VALIDATE_URL) || str_starts_with($product->image, 'http'))
+                                        <img src="{{ $product->image }}" alt="{{ $product->name }}" style="max-height: 120px; border-radius: 6px; display: block; object-fit: cover;">
+                                    @else
+                                        <span style="font-size: 32px; padding: 10px; display: inline-block;">{{ $product->image }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="media-upload-area" onclick="document.getElementById('imageFileInput').click()">
+                            <input type="file" id="imageFileInput" name="image" accept="image/*" onchange="previewSelectedImage(event)" style="display: none;">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-text">Click to replace or upload new photo</div>
+                            <div class="upload-subtext">PNG, JPG, JPEG, WEBP or SVG (Max 5MB)</div>
+                        </div>
+
+                        <!-- Live preview box -->
+                        <div id="imagePreviewBox" class="image-preview-box" style="display: none; margin-top: 10px; width: 140px; height: 140px; border-radius: 8px; border: 1px solid var(--gray-300); overflow: hidden; position: relative;">
+                            <img id="imagePreviewImg" src="" alt="New Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                            <button type="button" class="remove-preview-btn" onclick="removeImagePreview(event)" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: #fff; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;">&times;</button>
+                        </div>
+                    </div>
+
+                    <!-- Pricing & Inventory Card -->
+                    <div class="card">
+                        <div class="card-title">💰 Pricing & Inventory</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regular-price">Regular Price (₹) <span class="required">*</span></label>
+                                <input type="number" step="0.01" min="0" id="regular-price" name="price" class="form-control" value="{{ old('price', $product->price) }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="compare-price">Discount / Compare Price (₹)</label>
+                                <input type="number" step="0.01" min="0" id="compare-price" name="discount_price" class="form-control" value="{{ old('discount_price', $product->discount_price) }}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="product-sku">SKU</label>
+                                <input type="text" id="product-sku" class="form-control" value="LUX-{{ str_pad($product->id, 3, '0', STR_PAD_LEFT) }}" readonly style="background: var(--gray-100); cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label for="stock-qty">Stock Quantity <span class="required">*</span></label>
+                                <input type="number" min="0" id="stock-qty" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Media / Images Card -->
-                <div class="card">
-                    <div class="card-title">🖼️ Product Media</div>
-                    <div class="media-upload-area">
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Click to upload or drag & drop images</div>
-                        <div class="upload-subtext">SVG, PNG, JPG, or WEBP (Max 5MB each)</div>
-                    </div>
+                <!-- Right Column: Status & Organization -->
+                <div>
+                    <!-- Status Card -->
+                    <div class="card">
+                        <div class="card-title">⚙️ Product Status</div>
+                        <div id="statusBadge" class="status-badge-preview {{ $product->status }}">
+                            ● {{ ucfirst($product->status) }} in Store
+                        </div>
 
-                    <div class="media-preview-list">
-                        <div class="media-preview-item">
-                            <span class="media-preview-badge">Primary</span>
-                            <span>👗</span>
-                            <button type="button" class="media-preview-remove" title="Remove">&times;</button>
-                        </div>
-                        <div class="media-preview-item">
-                            <span>✨</span>
-                            <button type="button" class="media-preview-remove" title="Remove">&times;</button>
-                        </div>
-                        <div class="media-preview-item">
-                            <span>🧵</span>
-                            <button type="button" class="media-preview-remove" title="Remove">&times;</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pricing & Inventory Card -->
-                <div class="card">
-                    <div class="card-title">💰 Pricing & Inventory</div>
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="regular-price">Regular Price (₹) <span class="required">*</span></label>
-                            <input type="number" id="regular-price" class="form-control" value="4999">
+                            <label for="product-status">Visibility Status <span class="required">*</span></label>
+                            <select id="product-status" name="status" class="form-control" onchange="updateStatusBadge(this.value)" required>
+                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active (Published)</option>
+                                <option value="draft" {{ old('status', $product->status) == 'draft' ? 'selected' : '' }}>Draft (Hidden)</option>
+                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive (Archived)</option>
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label for="compare-price">Compare at Price (₹)</label>
-                            <input type="number" id="compare-price" class="form-control" value="6499">
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Product Stats</label>
+                            <div style="font-size: 13px; color: var(--gray-600); line-height: 1.8;">
+                                <div>👁 Total Views: <strong>{{ $product->views ?? 0 }}</strong></div>
+                                <div>🛍 Sold Count: <strong>{{ $product->sold_count ?? 0 }}</strong></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="product-sku">SKU (Stock Keeping Unit) <span class="required">*</span></label>
-                            <input type="text" id="product-sku" class="form-control" value="LUX-001">
-                        </div>
-                        <div class="form-group">
-                            <label for="stock-qty">Stock Quantity <span class="required">*</span></label>
-                            <input type="number" id="stock-qty" class="form-control" value="45">
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label class="checkbox-label">
-                            <input type="checkbox" checked>
-                            <span>Track inventory automatically for this product</span>
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox">
-                            <span>Continue selling when out of stock</span>
-                        </label>
+                    <!-- Action Card -->
+                    <div class="card">
+                        <div class="card-title">⚡ Actions</div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">
+                            Save Changes
+                        </button>
+                        <a href="{{ route('dashboard.product') }}" class="btn btn-secondary" style="width: 100%;">
+                            Cancel & Return
+                        </a>
                     </div>
                 </div>
             </div>
-
-            <!-- Right Column: Status & Organization -->
-            <div>
-                <!-- Status Card -->
-                <div class="card">
-                    <div class="card-title">⚙️ Product Status</div>
-                    <div class="status-badge-preview">● Active in Store</div>
-
-                    <div class="form-group">
-                        <label for="product-status">Visibility Status</label>
-                        <select id="product-status" class="form-control">
-                            <option value="active" selected>Active (Published)</option>
-                            <option value="draft">Draft (Hidden)</option>
-                            <option value="archived">Archived</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sales-channel">Sales Channels</label>
-                        <select id="sales-channel" class="form-control">
-                            <option selected>Online Store + POS</option>
-                            <option>Online Store Only</option>
-                            <option>Private Showroom Only</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Attributes / Variants Card -->
-                <div class="card">
-                    <div class="card-title">🎨 Attributes & Variants</div>
-
-                    <div class="form-group">
-                        <label for="product-colors">Available Colors</label>
-                        <input type="text" id="product-colors" class="form-control" value="Midnight Black, Emerald Green, Royal Navy">
-                        <div class="form-hint">Comma separated values</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="product-sizes">Available Sizes</label>
-                        <input type="text" id="product-sizes" class="form-control" value="XS, S, M, L, XL">
-                        <div class="form-hint">Comma separated values</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="product-material">Fabric / Material</label>
-                        <input type="text" id="product-material" class="form-control" value="95% Silk, 5% Elastane">
-                    </div>
-                </div>
-
-                <!-- Organization & Tags Card -->
-                <div class="card">
-                    <div class="card-title">🏷️ Tags & Collections</div>
-
-                    <div class="form-group">
-                        <label for="product-tags">Tags</label>
-                        <input type="text" id="product-tags" class="form-control" value="dresses, silk, eveningwear, luxury, autumn-2024">
-                        <div class="form-hint">Comma-separated tags</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="product-collection">Featured Collection</label>
-                        <select id="product-collection" class="form-control">
-                            <option value="autumn" selected>Autumn Luxe 2024</option>
-                            <option value="gala">Evening & Gala Edit</option>
-                            <option value="essentials">Permanent Essentials</option>
-                            <option value="none">None</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="margin-top: 15px;">
-                        <button type="button" class="btn btn-danger" style="width: 100%; font-size: 13px;" onclick="confirmDelete()">🗑 Delete Product</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </form>
     </main>
-
-    <!-- Success Toast -->
-    <div id="saveToast" class="save-alert">✓ Product details updated successfully!</div>
 
     <!-- Footer -->
     <footer>
@@ -758,31 +771,51 @@
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
         }
 
         function closeSidebar() {
             const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth <= 768) {
+            if (sidebar && window.innerWidth <= 768) {
                 sidebar.classList.remove('active');
             }
         }
 
-        function goBack() {
-            window.location.href = '/dashboard/product';
+        function previewSelectedImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewBox = document.getElementById('imagePreviewBox');
+                    const previewImg = document.getElementById('imagePreviewImg');
+                    previewImg.src = e.target.result;
+                    previewBox.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        function showSaveMessage() {
-            const toast = document.getElementById('saveToast');
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+        function removeImagePreview(event) {
+            event.stopPropagation();
+            const input = document.getElementById('imageFileInput');
+            const previewBox = document.getElementById('imagePreviewBox');
+            const previewImg = document.getElementById('imagePreviewImg');
+            input.value = '';
+            previewImg.src = '';
+            previewBox.style.display = 'none';
         }
 
-        function confirmDelete() {
-            if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
-                window.location.href = '/dashboard/product';
+        function updateStatusBadge(status) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'status-badge-preview ' + status;
+            if (status === 'active') {
+                badge.textContent = '● Active in Store';
+            } else if (status === 'draft') {
+                badge.textContent = '● Draft (Hidden)';
+            } else {
+                badge.textContent = '● Inactive (Archived)';
             }
         }
 
@@ -792,7 +825,10 @@
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
-                document.getElementById('sidebar').classList.remove('active');
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) {
+                    sidebar.classList.remove('active');
+                }
             }
         });
     </script>
