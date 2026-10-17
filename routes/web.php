@@ -49,6 +49,7 @@ Route::get('/google/callback', function () {
 
 
 Route::middleware(["auth", "verified"])->group(function () {
+    Route::get('/wishlist', [load_website::class, 'wishlist'])->name('wishlist');
     Route::get('/account', [load_website::class, 'account'])->name('account');
     Route::get('/orders', [load_website::class, 'orders']);
     Route::get('/order-confirm', [load_website::class, 'order_confirm']);
