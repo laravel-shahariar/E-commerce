@@ -1,5 +1,8 @@
 @extends('template.basic')
-@section('title', 'Product Details')
+@php
+    $product = \App\Models\product::find($product_id);
+@endphp
+@section('title', $product ? $product->name . ' - Product Details' : 'Product Details')
 @section('style')
 <style>
 /* Breadcrumb */
@@ -53,6 +56,18 @@
         font-size: 150px;
         border: 2px solid var(--border-color);
         position: relative;
+}
+.main-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
 }
 
 .product-badge {
@@ -453,325 +468,325 @@
 @endsection
 
 @section('content')
-    <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <a href="index.html">Home</a>
-        <span>/</span>
-        <a href="#">Electronics</a>
-        <span>/</span>
-        <span>Samsung Galaxy S24 Ultra</span>
-    </div>
+    @if(!$product)
+        <div class="container" style="padding: 80px 20px; text-align: center;">
+            <h2 style="font-size: 28px; margin-bottom: 15px;">Product Not Found</h2>
+            <p style="color: var(--text-light); margin-bottom: 25px;">The product could not be found.</p>
+            <a href="{{ url('/') }}" class="btn btn-primary" style="display: inline-block; padding: 12px 25px; text-decoration: none;">Back to Home</a>
+        </div>
+    @else
+        @php
+            $discountPercent = 0;
+            if ($product->discount_price && $product->price > 0 && $product->discount_price < $product->price) {
+                $discountPercent = round((($product->price - $product->discount_price) / $product->price) * 100);
+            }
+            $mainImgUrl = $product->image ? (str_starts_with($product->image, 'http') ? $product->image : asset('/photo/' . ltrim(str_replace('photo/', '', $product->image), '/'))) : asset('/photo/p1.jpg');
+        @endphp
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Product Section -->
-        <div class="product-section">
-            <div class="product-layout">
-                <!-- Product Images -->
-                <div class="product-images">
-                    <div class="overflow-hidden main-image" id="mainImage">
-                        <img src="{{ asset('/photo/p' . $product_id . '.jpg') }}" alt="">
-                        <span class="product-badge">-20%</span>
-                    </div>
-                    <div class="thumbnail-gallery">
-                        <div class="thumbnail active" onclick="changeThumbnail(this)">📱</div>
-                        <div class="thumbnail" onclick="changeThumbnail(this)">📸</div>
-                        <div class="thumbnail" onclick="changeThumbnail(this)">⚙️</div>
-                        <div class="thumbnail" onclick="changeThumbnail(this)">🔋</div>
-                        <div class="thumbnail" onclick="changeThumbnail(this)">💾</div>
-                    </div>
-                </div>
-
-                <!-- Product Info -->
-                <div class="product-info">
-                    <h1 class="product-title">Samsung Galaxy S24 Ultra</h1>
-
-                    <div class="product-rating">
-                        <div class="stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
-                        <span class="rating-text">4.8 (2,345 reviews)</span>
-                        <span class="rating-badge">Best Seller</span>
-                    </div>
-
-                    <div class="price-section">
-                        <div class="price-display">
-                            <span class="current-price">₹79,999</span>
-                            <span class="original-price">₹99,999</span>
-                            <span class="discount-badge">Save 20%</span>
-                        </div>
-                        <div class="price-note">Inclusive of all taxes | Free Shipping</div>
-                    </div>
-
-                    <div class="availability">
-                        <span class="stock-status">✓ In Stock</span>
-                        <span style="color: var(--text-light); font-size: 14px;">Only 5 left in stock</span>
-                    </div>
-
-                    <div class="delivery-info">
-                        <div class="delivery-item">
-                            <span class="delivery-icon">🚚</span>
-                            <div>
-                                <div style="font-weight: 600;">Free Delivery</div>
-                                <div style="font-size: 12px; color: var(--text-light);">Expected by Oct 12</div>
-                            </div>
-                        </div>
-                        <div class="delivery-item">
-                            <span class="delivery-icon">↩️</span>
-                            <div>
-                                <div style="font-weight: 600;">Easy Return</div>
-                                <div style="font-size: 12px; color: var(--text-light);">7 days return policy</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quantity-selector">
-                        <span class="quantity-label">Quantity:</span>
-                        <div class="quantity-control">
-                            <button class="qty-btn" onclick="decreaseQty()">−</button>
-                            <input type="number" class="qty-input" id="quantity" value="1" min="1" max="10">
-                            <button class="qty-btn" onclick="increaseQty()">+</button>
-                        </div>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="addToCart()">Add to Cart</button>
-                        <button class="btn btn-secondary" onclick="buyNow()">Buy Now</button>
-                        <button class="btn btn-wishlist" onclick="addToWishlist()">♡</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tabs Section -->
-            <div class="tabs">
-                <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="openTab(event, 'description')">Description</button>
-                    <button class="tab-btn" onclick="openTab(event, 'specifications')">Specifications</button>
-                    <button class="tab-btn" onclick="openTab(event, 'reviews')">Reviews</button>
-                </div>
-
-                <!-- Description Tab -->
-                <div id="description" class="tab-content active">
-                    <h3 style="margin-bottom: 15px;">Product Description</h3>
-                    <p style="margin-bottom: 15px; line-height: 1.8;">
-                        The Samsung Galaxy S24 Ultra is a flagship smartphone featuring cutting-edge technology and premium build quality. 
-                        With its advanced camera system, powerful processor, and stunning display, this device offers an unparalleled 
-                        mobile experience for both professionals and enthusiasts.
-                    </p>
-                    <h4 style="margin: 20px 0 10px 0;">Key Features:</h4>
-                    <ul style="margin-left: 20px; line-height: 2;">
-                        <li>6.8" Dynamic AMOLED 2X Display with 120Hz refresh rate</li>
-                        <li>Snapdragon 8 Gen 3 Processor</li>
-                        <li>12GB/16GB RAM with 256GB/512GB/1TB Storage</li>
-                        <li>50MP Main Camera with Advanced AI Processing</li>
-                        <li>5000mAh Battery with 45W Fast Charging</li>
-                        <li>IP68 Water and Dust Resistance</li>
-                        <li>One UI 6 Operating System</li>
-                    </ul>
-                </div>
-
-                <!-- Specifications Tab -->
-                <div id="specifications" class="tab-content">
-                    <h3 style="margin-bottom: 15px;">Technical Specifications</h3>
-                    <div class="specifications-grid">
-                        <div class="spec-item">
-                            <span class="spec-label">Display:</span>
-                            <span class="spec-value">6.8" Dynamic AMOLED 2X, 1440 x 3120 px</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Processor:</span>
-                            <span class="spec-value">Snapdragon 8 Gen 3 Leading Version</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">RAM:</span>
-                            <span class="spec-value">12GB / 16GB</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Storage:</span>
-                            <span class="spec-value">256GB / 512GB / 1TB</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Main Camera:</span>
-                            <span class="spec-value">50MP f/1.8, OIS</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Front Camera:</span>
-                            <span class="spec-value">12MP f/2.2</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Battery:</span>
-                            <span class="spec-value">5000mAh</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Charging:</span>
-                            <span class="spec-value">45W Wired + 15W Wireless</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Operating System:</span>
-                            <span class="spec-value">One UI 6 (Android 14)</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Water Resistance:</span>
-                            <span class="spec-value">IP68 Rating</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Weight:</span>
-                            <span class="spec-value">218g</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Dimensions:</span>
-                            <span class="spec-value">162.8 x 77.9 x 8.6 mm</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reviews Tab -->
-                <div id="reviews" class="tab-content">
-                    <h3 style="margin-bottom: 15px;">Customer Reviews</h3>
-                    
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">John Doe</span>
-                            <span class="review-date">2 days ago</span>
-                        </div>
-                        <div class="review-stars">★★★★★</div>
-                        <div class="review-text">
-                            Amazing phone! The display is absolutely stunning and the camera quality is incredible. 
-                            Battery life easily lasts the whole day. Highly recommended!
-                        </div>
-                    </div>
-
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Sarah Smith</span>
-                            <span class="review-date">1 week ago</span>
-                        </div>
-                        <div class="review-stars">★★★★☆</div>
-                        <div class="review-text">
-                            Great phone overall. The only minor issue is that it doesn't come with a charger in the box. 
-                            Otherwise, excellent performance and build quality.
-                        </div>
-                    </div>
-
-                    <div class="review-item">
-                        <div class="review-header">
-                            <span class="reviewer-name">Mike Johnson</span>
-                            <span class="review-date">2 weeks ago</span>
-                        </div>
-                        <div class="review-stars">★★★★★</div>
-                        <div class="review-text">
-                            Worth every penny! The processing power is incredible for gaming and multitasking. 
-                            The 120Hz display makes everything feel incredibly smooth.
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{{ url('/') }}">Home</a>
+            <span>/</span>
+            <a href="#">{{ $product->category->name ?? 'Products' }}</a>
+            <span>/</span>
+            <span>{{ $product->name }}</span>
         </div>
 
-        <!-- Related Products -->
-        <div class="related-section">
-            <h2 class="related-title">Related Products You Might Like</h2>
-            <div class="products-grid">
-                <div class="product-card" onclick="window.location.href='product-detail.html'">
-                    <div class="product-image-small">📱</div>
-                    <div class="product-info-small">
-                        <div class="product-title-small">Apple iPhone 15 Pro Max</div>
-                        <div class="product-price-small">₹139,999</div>
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Product Section -->
+            <div class="product-section">
+                <div class="product-layout">
+                    <!-- Product Images -->
+                    <div class="product-images">
+                        <div class="overflow-hidden main-image" id="mainImage">
+                            <img src="{{ $mainImgUrl }}" alt="{{ $product->name }}" id="mainProductImg">
+                            @if($discountPercent > 0)
+                                <span class="product-badge">-{{ $discountPercent }}%</span>
+                            @endif
+                        </div>
+                        <div class="thumbnail-gallery">
+                            @if(!empty($product->images) && is_array($product->images))
+                                @foreach($product->images as $img)
+                                    @php
+                                        $imgUrl = str_starts_with($img, 'http') ? $img : asset('/photo/' . ltrim(str_replace('photo/', '', $img), '/'));
+                                    @endphp
+                                    <div class="thumbnail {{ $loop->first ? 'active' : '' }}" onclick="changeThumbnailImage(this, '{{ $imgUrl }}')">
+                                        <img src="{{ $imgUrl }}" alt="">
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="thumbnail active" onclick="changeThumbnailImage(this, '{{ $mainImgUrl }}')">
+                                    <img src="{{ $mainImgUrl }}" alt="">
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <h1 class="product-title">{{ $product->name }}</h1>
+
+                        <div class="product-rating">
+                            <div class="stars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <span class="rating-text">4.8 ({{ $product->views ?? 0 }} views | {{ $product->sold_count ?? 0 }} sold)</span>
+                            @if($product->sold_count > 10)
+                                <span class="rating-badge">Best Seller</span>
+                            @endif
+                        </div>
+
+                        <div class="price-section">
+                            <div class="price-display">
+                                @if($product->discount_price && $product->discount_price < $product->price)
+                                    <span class="current-price">₹{{ number_format($product->discount_price, 2) }}</span>
+                                    <span class="original-price">₹{{ number_format($product->price, 2) }}</span>
+                                    <span class="discount-badge">Save {{ $discountPercent }}%</span>
+                                @else
+                                    <span class="current-price">₹{{ number_format($product->price, 2) }}</span>
+                                @endif
+                            </div>
+                            <div class="price-note">Inclusive of all taxes | Free Shipping</div>
+                        </div>
+
+                        <div class="availability">
+                            @if($product->stock > 0)
+                                <span class="stock-status">✓ In Stock</span>
+                                <span style="color: var(--text-light); font-size: 14px;">Only {{ $product->stock }} left in stock</span>
+                            @else
+                                <span class="stock-status" style="color: var(--danger-color);">✕ Out of Stock</span>
+                            @endif
+                        </div>
+
+                        <div class="delivery-info">
+                            <div class="delivery-item">
+                                <span class="delivery-icon">🚚</span>
+                                <div>
+                                    <div style="font-weight: 600;">Free Delivery</div>
+                                    <div style="font-size: 12px; color: var(--text-light);">Expected within 2-4 days</div>
+                                </div>
+                            </div>
+                            <div class="delivery-item">
+                                <span class="delivery-icon">↩️</span>
+                                <div>
+                                    <div style="font-weight: 600;">Easy Return</div>
+                                    <div style="font-size: 12px; color: var(--text-light);">7 days return policy</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quantity-selector">
+                            <span class="quantity-label">Quantity:</span>
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="decreaseQty()">−</button>
+                                <input type="number" class="qty-input" id="quantity" value="1" min="1" max="{{ max(1, $product->stock) }}">
+                                <button class="qty-btn" onclick="increaseQty()">+</button>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="addToCart()" {{ $product->stock <= 0 ? 'disabled' : '' }}>Add to Cart</button>
+                            <button class="btn btn-secondary" onclick="buyNow()" {{ $product->stock <= 0 ? 'disabled' : '' }}>Buy Now</button>
+                            <button class="btn btn-wishlist" onclick="addToWishlist()">♡</button>
+                        </div>
                     </div>
                 </div>
-                <div class="product-card" onclick="window.location.href='product-detail.html'">
-                    <div class="product-image-small">📱</div>
-                    <div class="product-info-small">
-                        <div class="product-title-small">Google Pixel 8 Pro</div>
-                        <div class="product-price-small">₹79,999</div>
+
+                <!-- Tabs Section -->
+                <div class="tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="openTab(event, 'description')">Description</button>
+                        <button class="tab-btn" onclick="openTab(event, 'specifications')">Specifications</button>
+                        <button class="tab-btn" onclick="openTab(event, 'reviews')">Reviews</button>
                     </div>
-                </div>
-                <div class="product-card" onclick="window.location.href='product-detail.html'">
-                    <div class="product-image-small">🎧</div>
-                    <div class="product-info-small">
-                        <div class="product-title-small">Samsung Galaxy Buds2</div>
-                        <div class="product-price-small">₹12,999</div>
+
+                    <!-- Description Tab -->
+                    <div id="description" class="tab-content active">
+                        <h3 style="margin-bottom: 15px;">Product Description</h3>
+                        <p style="margin-bottom: 15px; line-height: 1.8;">
+                            {!! nl2br(e($product->description ?? 'No description available for this product.')) !!}
+                        </p>
                     </div>
-                </div>
-                <div class="product-card" onclick="window.location.href='product-detail.html'">
-                    <div class="product-image-small">⌨️</div>
-                    <div class="product-info-small">
-                        <div class="product-title-small">Samsung Galaxy Tab S9</div>
-                        <div class="product-price-small">₹54,999</div>
+
+                    <!-- Specifications Tab -->
+                    <div id="specifications" class="tab-content">
+                        <h3 style="margin-bottom: 15px;">Technical Specifications</h3>
+                        <div class="specifications-grid">
+                            <div class="spec-item">
+                                <span class="spec-label">Product Name:</span>
+                                <span class="spec-value">{{ $product->name }}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Category:</span>
+                                <span class="spec-value">{{ $product->category->name ?? 'General' }}</span>
+                            </div>
+                            @if($product->brand)
+                            <div class="spec-item">
+                                <span class="spec-label">Brand:</span>
+                                <span class="spec-value">{{ $product->brand->name }}</span>
+                            </div>
+                            @endif
+                            @if($product->size)
+                            <div class="spec-item">
+                                <span class="spec-label">Size:</span>
+                                <span class="spec-value">{{ $product->size->name ?? $product->size->size ?? 'N/A' }}</span>
+                            </div>
+                            @endif
+                            <div class="spec-item">
+                                <span class="spec-label">Stock Status:</span>
+                                <span class="spec-value">{{ $product->stock > 0 ? $product->stock . ' units available' : 'Out of Stock' }}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Status:</span>
+                                <span class="spec-value">{{ ucfirst($product->status ?? 'active') }}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Total Views:</span>
+                                <span class="spec-value">{{ $product->views ?? 0 }}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Items Sold:</span>
+                                <span class="spec-value">{{ $product->sold_count ?? 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div id="reviews" class="tab-content">
+                        <h3 style="margin-bottom: 15px;">Customer Reviews</h3>
+                        
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">Verified Buyer</span>
+                                <span class="review-date">Recent</span>
+                            </div>
+                            <div class="review-stars">★★★★★</div>
+                            <div class="review-text">
+                                Great product quality, matches the description completely. Fast shipping and smooth checkout experience!
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Related Products -->
+            @php
+                $relatedProducts = \App\Models\product::where('id', '!=', $product->id)->when($product->category_id, function($query) use ($product) {
+                        return $query->where('category_id', $product->category_id);
+                    })
+                    ->take(4)
+                    ->get();
+                if ($relatedProducts->isEmpty()) {
+                    $relatedProducts = \App\Models\product::where('id', '!=', $product->id)->take(4)->get();
+                }
+            @endphp
+            @if($relatedProducts->count() > 0)
+            <div class="related-section">
+                <h2 class="related-title">Related Products You Might Like</h2>
+                <div class="products-grid">
+                    @foreach($relatedProducts as $rel)
+                        @php
+                            $relImg = $rel->image ? (str_starts_with($rel->image, 'http') ? $rel->image : asset('/photo/' . ltrim(str_replace('photo/', '', $rel->image), '/'))) : asset('/photo/p1.jpg');
+                        @endphp
+                        <div class="product-card" onclick="window.location.href='{{ url('/product/' . $rel->id) }}'">
+                            <div class="product-image-small" style="padding: 10px;">
+                                <img src="{{ $relImg }}" alt="{{ $rel->name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                            </div>
+                            <div class="product-info-small">
+                                <div class="product-title-small">{{ $rel->name }}</div>
+                                <div class="product-price-small">₹{{ number_format($rel->discount_price ?? $rel->price, 2) }}</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
-    </div>
 
-    <script>
-        // Quantity controls
-        function increaseQty() {
-            const input = document.getElementById('quantity');
-            input.value = Math.min(parseInt(input.value) + 1, 10);
-        }
-
-        function decreaseQty() {
-            const input = document.getElementById('quantity');
-            input.value = Math.max(parseInt(input.value) - 1, 1);
-        }
-
-        // Thumbnail gallery
-        function changeThumbnail(element) {
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            element.classList.add('active');
-            document.getElementById('mainImage').textContent = element.textContent;
-        }
-
-        // Tab functionality
-        function openTab(event, tabName) {
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(tab => tab.classList.remove('active'));
-            
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            tabBtns.forEach(btn => btn.classList.remove('active'));
-
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        // Cart functionality
-        function addToCart() {
-            const quantity = document.getElementById('quantity').value;
-            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            
-            const item = {
-                id: 1,
-                title: 'Samsung Galaxy S24 Ultra',
-                price: 79999,
-                quantity: parseInt(quantity),
-                emoji: '📱'
-            };
-
-            const existing = cartItems.find(i => i.id === item.id);
-            if (existing) {
-                existing.quantity += item.quantity;
-            } else {
-                cartItems.push(item);
+        <script>
+            // Quantity controls
+            function increaseQty() {
+                const input = document.getElementById('quantity');
+                const max = parseInt(input.getAttribute('max')) || 10;
+                input.value = Math.min(parseInt(input.value) + 1, max);
             }
 
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            alert(`✓ Added ${quantity} item(s) to cart!`);
-        }
+            function decreaseQty() {
+                const input = document.getElementById('quantity');
+                input.value = Math.max(parseInt(input.value) - 1, 1);
+            }
 
-        function buyNow() {
-            addToCart();
-            setTimeout(() => {
-                window.location.href = 'checkout.html';
-            }, 500);
-        }
+            // Thumbnail gallery
+            function changeThumbnailImage(element, src) {
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                element.classList.add('active');
+                const mainImg = document.getElementById('mainProductImg');
+                if (mainImg) {
+                    mainImg.src = src;
+                }
+            }
 
-        function addToWishlist() {
-            alert('♡ Added to Wishlist!');
-        }
-    </script>
+            function changeThumbnail(element) {
+                document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                element.classList.add('active');
+                const img = element.querySelector('img');
+                const mainImg = document.getElementById('mainProductImg');
+                if (img && mainImg) {
+                    mainImg.src = img.src;
+                }
+            }
+
+            // Tab functionality
+            function openTab(event, tabName) {
+                const tabContents = document.querySelectorAll('.tab-content');
+                tabContents.forEach(tab => tab.classList.remove('active'));
+                
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                tabBtns.forEach(btn => btn.classList.remove('active'));
+
+                document.getElementById(tabName).classList.add('active');
+                event.currentTarget.classList.add('active');
+            }
+
+            // Cart functionality
+            function addToCart() {
+                const quantity = document.getElementById('quantity').value;
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+                
+                const item = {
+                    id: {{ $product->id }},
+                    title: @json($product->name),
+                    price: {{ $product->discount_price ?? $product->price ?? 0 }},
+                    quantity: parseInt(quantity),
+                    image: @json($mainImgUrl)
+                };
+
+                const existing = cartItems.find(i => i.id === item.id);
+                if (existing) {
+                    existing.quantity += item.quantity;
+                } else {
+                    cartItems.push(item);
+                }
+
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                alert(`✓ Added ${quantity} item(s) to cart!`);
+            }
+
+            function buyNow() {
+                addToCart();
+                setTimeout(() => {
+                    window.location.href = '{{ url('/checkout') }}';
+                }, 500);
+            }
+
+            function addToWishlist() {
+                alert('♡ Added to Wishlist!');
+            }
+        </script>
+    @endif
 @endsection
