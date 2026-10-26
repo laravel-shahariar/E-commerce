@@ -619,7 +619,80 @@
         </div>
     </div>
 
+    <!-- Edit Address Modal -->
+    <div id="editAddressModal" class="modal-overlay" onclick="closeEditAddressModal(event)">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Edit Address</h3>
+                <button type="button" class="modal-close-btn" onclick="closeEditAddressModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editAddressForm" action="{{ route('account.edit-address') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="id" id="edit_address_id">
+                    
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Full Name</label>
+                            <input type="text" name="name" id="edit_name" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Phone Number</label>
+                            <input type="tel" name="phone_number" id="edit_phone_number" placeholder="+91 98765 43210" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Email Address</label>
+                            <input type="email" name="email" id="edit_email" placeholder="john@example.com" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>State / Province</label>
+                            <input type="text" name="province" id="edit_province" placeholder="State / Province" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>City</label>
+                            <input type="text" name="city" id="edit_city" placeholder="City" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>District / Area</label>
+                            <input type="text" name="district" id="edit_district" placeholder="District / Area" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Postal / PIN Code</label>
+                            <input type="text" name="postal_code" id="edit_postal_code" placeholder="Postal Code" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px">
+                        <label>Street Address</label>
+                        <textarea name="address" id="edit_address" rows="3" placeholder="Flat, House no., Building, Street address" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px;" required></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="edit_is_default" name="is_default" value="1" style="width: 16px; height: 16px; cursor: pointer;">
+                        <label for="edit_is_default" style="margin: 0; cursor: pointer; font-size: 14px; color: var(--text-dark);">Set as default address</label>
+                    </div>
+
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditAddressModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const addressesData = @json($addresses->keyBy('id'));
+
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
@@ -663,19 +736,52 @@
             }
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('addressModal');
-                if (modal && modal.classList.contains('active')) {
+        function editAddress(id) {
+            const addr = addressesData[id];
+            if (!addr) return;
+
+            document.getElementById('edit_address_id').value = addr.id;
+            document.getElementById('edit_name').value = addr.name || '';
+            document.getElementById('edit_phone_number').value = addr.phone_number || '';
+            document.getElementById('edit_email').value = addr.email || '';
+            document.getElementById('edit_province').value = addr.province || '';
+            document.getElementById('edit_city').value = addr.city || '';
+            document.getElementById('edit_district').value = addr.district || '';
+            document.getElementById('edit_postal_code').value = addr.postal_code || '';
+            document.getElementById('edit_address').value = addr.address || '';
+            document.getElementById('edit_is_default').checked = !!addr.is_default;
+
+            const modal = document.getElementById('editAddressModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeEditAddressModal(event) {
+            if (!event || event.target.id === 'editAddressModal' || event.target.classList.contains('modal-close-btn') || event.target.closest('.modal-close-btn') || event.target.classList.contains('btn-secondary')) {
+                const modal = document.getElementById('editAddressModal');
+                if (modal) {
                     modal.classList.remove('active');
                     document.body.style.overflow = '';
                 }
             }
-        });
-
-        function editAddress(id) {
-            console.log('Edit address:', id);
         }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const addModal = document.getElementById('addressModal');
+                if (addModal && addModal.classList.contains('active')) {
+                    addModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+                const editModal = document.getElementById('editAddressModal');
+                if (editModal && editModal.classList.contains('active')) {
+                    editModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
 
         function setDefault(id) {
             console.log('Set default address:', id);

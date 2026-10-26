@@ -91,6 +91,52 @@ class load_website extends Controller
         return redirect()->back()->with('success', 'Address added successfully!');
     }
 
+    function edit_address(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:address,id',
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'province' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'district' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'address' => 'required|string',
+        ]);
+
+        $address = address::where('id', $request->id)->where('user_id', auth()->id())->firstOrFail();
+
+        $isDefault = $request->has('is_default');
+
+        if ($isDefault) {
+            address::where('user_id', auth()->id())->where('id', '!=', $address->id)->update(['is_default' => false]);
+        } elseif (address::where('user_id', auth()->id())->count() === 1) {
+            $isDefault = true;
+        }
+
+        $address->name = $request->name;
+        $address->phone_number = $request->phone_number;
+        $address->email = $request->email;
+        $address->province = $request->province;
+        $address->city = $request->city;
+        $address->district = $request->district;
+        $address->postal_code = $request->postal_code;
+        $address->address = $request->address;
+        $address->is_default = $isDefault;
+        $address->save();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Address updated successfully!',
+                'address' => $address,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Address updated successfully!');
+    }
+
     function category($category_name)
     {
         return view('category', compact('category_name'));
