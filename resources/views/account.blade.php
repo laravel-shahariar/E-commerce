@@ -788,7 +788,26 @@
         }
 
         function deleteAddress(id) {
-            console.log('Delete address:', id);
+            if (confirm('Are you sure you want to delete this address?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('account.delete-address') }}';
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'id';
+                idInput.value = id;
+                form.appendChild(idInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
         }
     </script>
 @endsection

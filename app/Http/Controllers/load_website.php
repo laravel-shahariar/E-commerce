@@ -137,6 +137,35 @@ class load_website extends Controller
         return redirect()->back()->with('success', 'Address updated successfully!');
     }
 
+    function delete_address(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:address,id',
+        ]);
+
+        $address = address::where('id', $request->id)->where('user_id', auth()->id())->firstOrFail();
+
+        $wasDefault = $address->is_default;
+        $address->delete();
+
+        if ($wasDefault) {
+            $nextDefault = address::where('user_id', auth()->id())->latest()->first();
+            if ($nextDefault) {
+                $nextDefault->is_default = true;
+                $nextDefault->save();
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Address deleted successfully!',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Address deleted successfully!');
+    }
+
     function category($category_name)
     {
         return view('category', compact('category_name'));
