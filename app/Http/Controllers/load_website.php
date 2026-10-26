@@ -42,7 +42,8 @@ class load_website extends Controller
 
     function account()
     {
-        return view('account');
+        $addresses = address::where('user_id', auth()->id())->orderBy('is_default', 'desc')->latest()->get();
+        return view('account', compact('addresses'));
     }
 
     function add_address(Request $request)

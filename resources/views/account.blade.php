@@ -408,36 +408,30 @@
                     <h2 class="section-title">📍 Saved Addresses</h2>
 
                     <div class="address-grid">
-                        <div class="address-card default">
-                            <div class="address-badge">Default</div>
-                            <div class="address-type">Home</div>
-                            <div class="address-detail">
-                                123 Main Street<br>
-                                New York, NY 10001<br>
-                                United States<br>
-                                Phone: +91 98765 43210
+                        @foreach($addresses as $address)
+                            <div class="address-card {{ $address->is_default ? 'default' : '' }}">
+                                @if($address->is_default)
+                                    <div class="address-badge">Default</div>
+                                @endif
+                                <div class="address-type">{{ $address->name }}</div>
+                                <div class="address-detail">
+                                    {{ $address->address }}<br>
+                                    @if($address->district)
+                                        {{ $address->district }},
+                                    @endif
+                                    {{ $address->city }}, {{ $address->province }} {{ $address->postal_code }}<br>
+                                    Phone: {{ $address->phone_number }}<br>
+                                    Email: {{ $address->email }}
+                                </div>
+                                <div class="address-actions">
+                                    <button type="button" class="address-action-btn" onclick="editAddress({{ $address->id }})">Edit</button>
+                                    @if(!$address->is_default)
+                                        <button type="button" class="address-action-btn" onclick="setDefault({{ $address->id }})">Set Default</button>
+                                    @endif
+                                    <button type="button" class="address-action-btn" onclick="deleteAddress({{ $address->id }})">Delete</button>
+                                </div>
                             </div>
-                            <div class="address-actions">
-                                <button class="address-action-btn" onclick="editAddress()">Edit</button>
-                                <button class="address-action-btn" onclick="setDefault()">Set Default</button>
-                                <button class="address-action-btn" onclick="deleteAddress()">Delete</button>
-                            </div>
-                        </div>
-
-                        <div class="address-card">
-                            <div class="address-type">Office</div>
-                            <div class="address-detail">
-                                456 Business Avenue<br>
-                                New York, NY 10002<br>
-                                United States<br>
-                                Phone: +91 98765 43210
-                            </div>
-                            <div class="address-actions">
-                                <button class="address-action-btn" onclick="editAddress()">Edit</button>
-                                <button class="address-action-btn" onclick="setDefault()">Set Default</button>
-                                <button class="address-action-btn" onclick="deleteAddress()">Delete</button>
-                            </div>
-                        </div>
+                        @endforeach
 
                         <div class="add-button" onclick="addNewAddress()">
                             <div style="font-size: 30px; margin-bottom: 10px;">+</div>
@@ -678,5 +672,17 @@
                 }
             }
         });
+
+        function editAddress(id) {
+            console.log('Edit address:', id);
+        }
+
+        function setDefault(id) {
+            console.log('Set default address:', id);
+        }
+
+        function deleteAddress(id) {
+            console.log('Delete address:', id);
+        }
     </script>
 @endsection
