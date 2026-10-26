@@ -375,14 +375,14 @@
             <a href="#" class="view-all">View All ></a>
         </div>
         <div class="products-grid" id="productsGrid">
-            @foreach($products as $product)
+            @foreach($latestProducts as $product)
                 <x-preview
                     :link="url('/product/' . $product->id)"
                     :photo="$product->image"
                     :title="$product->name"
                     :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
                     :review="$product->reviews ?? 0"
-                    :price="$product->price"
+                    :price="$product->discount_price ?? $product->price"
                     :original_price="$product->discount_price ? $product->price : null"
                 />
             @endforeach
@@ -420,7 +420,7 @@
                     :title="$product->name"
                     :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
                     :review="$product->reviews ?? 0"
-                    :price="$product->price"
+                    :price="$product->discount_price ?? $product->price"
                     :original_price="$product->discount_price ? $product->price : null"
                 />
             @endforeach
@@ -439,7 +439,7 @@
                     :title="$product->name"
                     :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
                     :review="$product->reviews ?? 0"
-                    :price="$product->price"
+                    :price="$product->discount_price ?? $product->price"
                     :original_price="$product->discount_price ? $product->price : null"
                 />
             @endforeach
@@ -458,7 +458,7 @@
                     :title="$product->name"
                     :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
                     :review="$product->reviews ?? 0"
-                    :price="$product->price"
+                    :price="$product->discount_price ?? $product->price"
                     :original_price="$product->discount_price ? $product->price : null"
                 />
             @endforeach

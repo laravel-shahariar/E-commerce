@@ -10,7 +10,8 @@ class load_website extends Controller
     function home()
     {
         $products = product::take(5)->inRandomOrder()->get();
-        return view('home', compact('products'));
+        $latestProducts = product::latest()->take(5)->get();
+        return view('home', compact('products', 'latestProducts'));
     }
 
     function product($product_id)
