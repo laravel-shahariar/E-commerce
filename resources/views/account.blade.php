@@ -258,6 +258,72 @@
         }
     }
 
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-container {
+        background-color: var(--white);
+        border-radius: 8px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        animation: modalFadeIn 0.3s ease;
+    }
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color 0.2s ease;
+    }
+    .modal-close-btn:hover {
+        color: var(--text-dark);
+    }
+    .modal-body {
+        padding: 25px;
+    }
     </style>
 @endsection
 @section('content')
@@ -490,6 +556,75 @@
         </div>
     </div>
 
+    <!-- Add New Address Modal -->
+    <div id="addressModal" class="modal-overlay" onclick="closeAddressModal(event)">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title">📍 Add New Address</h3>
+                <button type="button" class="modal-close-btn" onclick="closeAddressModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm" action="{{ route('account.add-address') }}" method="POST">
+                    @csrf
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Full Name</label>
+                            <input type="text" name="name" placeholder="John Doe" value="{{ Auth::user()->name }}" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Phone Number</label>
+                            <input type="tel" name="phone_number" placeholder="+91 98765 43210" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Email Address</label>
+                            <input type="email" name="email" placeholder="john@example.com" value="{{ Auth::user()->email ?? '' }}" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>State / Province</label>
+                            <input type="text" name="province" placeholder="State / Province" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>City</label>
+                            <input type="text" name="city" placeholder="City" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>District / Area</label>
+                            <input type="text" name="district" placeholder="District / Area" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 15px">
+                            <label>Postal / PIN Code</label>
+                            <input type="text" name="postal_code" placeholder="Postal Code" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 15px">
+                        <label>Street Address</label>
+                        <textarea name="address" rows="3" placeholder="Flat, House no., Building, Street address" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px;" required></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="is_default" name="is_default" value="1" style="width: 16px; height: 16px; cursor: pointer;">
+                        <label for="is_default" style="margin: 0; cursor: pointer; font-size: 14px; color: var(--text-dark);">Set as default address</label>
+                    </div>
+
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddressModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         function showSection(sectionId) {
             // Hide all sections
@@ -515,5 +650,33 @@
         function toggleSetting(element) {
             element.classList.toggle('active');
         }
+
+        function addNewAddress() {
+            const modal = document.getElementById('addressModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeAddressModal(event) {
+            if (!event || event.target.id === 'addressModal' || event.target.classList.contains('modal-close-btn') || event.target.closest('.modal-close-btn') || event.target.classList.contains('btn-secondary')) {
+                const modal = document.getElementById('addressModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('addressModal');
+                if (modal && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
     </script>
 @endsection

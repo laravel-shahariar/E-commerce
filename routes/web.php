@@ -51,6 +51,9 @@ Route::get('/google/callback', function () {
 Route::middleware(["auth", "verified"])->group(function () {
     Route::get('/wishlist', [load_website::class, 'wishlist'])->name('wishlist');
     Route::get('/account', [load_website::class, 'account'])->name('account');
+    Route::post('/account/add-address', [load_website::class, 'add_address'])->name('account.add-address');
+    Route::post('/account/edit-address', [load_website::class, 'edit_address'])->name('account.edit-address');
+    Route::post('/account/delete-address', [load_website::class, 'delete_address'])->name('account.delete-address');
     Route::get('/orders', [load_website::class, 'orders']);
     Route::get('/order-confirm', [load_website::class, 'order_confirm']);
 
