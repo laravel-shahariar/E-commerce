@@ -166,6 +166,24 @@ class load_website extends Controller
         return redirect()->back()->with('success', 'Address deleted successfully!');
     }
 
+    function set_default_address(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:address,id',
+        ]);
+
+        $address = address::where('id', $request->id)->where('user_id', auth()->id())->firstOrFail();
+
+        // Remove default from all user addresses
+        address::where('user_id', auth()->id())->update(['is_default' => false]);
+
+        // Set selected address as default
+        $address->is_default = true;
+        $address->save();
+
+        return redirect()->back()->with('success', 'Default address updated successfully!');
+    }
+
     function category($category_name)
     {
         return view('category', compact('category_name'));

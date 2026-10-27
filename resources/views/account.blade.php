@@ -784,7 +784,24 @@
         });
 
         function setDefault(id) {
-            console.log('Set default address:', id);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('account.default.address') }}';
+
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+
+            document.body.appendChild(form);
+            form.submit();
         }
 
         function deleteAddress(id) {

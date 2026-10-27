@@ -54,6 +54,7 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::post('/account/add-address', [load_website::class, 'add_address'])->name('account.add-address');
     Route::post('/account/edit-address', [load_website::class, 'edit_address'])->name('account.edit-address');
     Route::post('/account/delete-address', [load_website::class, 'delete_address'])->name('account.delete-address');
+    Route::post('/account/set-default-address', [load_website::class, 'set_default_address'])->name('account.default.address');
     Route::get('/orders', [load_website::class, 'orders']);
     Route::get('/order-confirm', [load_website::class, 'order_confirm']);
 
