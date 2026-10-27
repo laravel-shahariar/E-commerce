@@ -111,40 +111,7 @@
             background-color: #e3f2fd;
 }
 
-.payment-methods {
-    display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-}
 
-.payment-method {
-    padding: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-}
-
-.payment-method:hover {
-    border-color: var(--primary-color);
-}
-
-.payment-method.selected {
-    border-color: var(--primary-color);
-            background-color: #e3f2fd;
-}
-
-.payment-icon {
-    font-size: 30px;
-            margin-bottom: 8px;
-}
-
-.payment-label {
-    font-weight: 600;
-            font-size: 13px;
-}
 
 .summary-item {
     display: flex;
@@ -236,9 +203,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .payment-methods {
-                grid-template-columns: 1fr;
-            }
+
 }
 </style>
 @endsection
@@ -275,40 +240,40 @@
                     
                     <div class="form-group">
                         <label>Full Name *</label>
-                        <input type="text" placeholder="Enter your full name" required>
+                        <input type="text" placeholder="Enter your full name" value="{{ $defaultAddress->name ?? '' }}" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Email *</label>
-                            <input type="email" placeholder="your@email.com" required>
+                            <input type="email" placeholder="your@email.com" value="{{ $defaultAddress->email ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>Phone *</label>
-                            <input type="tel" placeholder="+91 98765 43210" required>
+                            <input type="tel" placeholder="+91 98765 43210" value="{{ $defaultAddress->phone_number ?? '' }}" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Address *</label>
-                        <input type="text" placeholder="House No., Building Name" required>
+                        <input type="text" placeholder="House No., Building Name" value="{{ $defaultAddress->address ?? '' }}" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>City *</label>
-                            <input type="text" placeholder="Enter city" required>
+                            <input type="text" placeholder="Enter city" value="{{ $defaultAddress->city ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>State *</label>
-                            <input type="text" placeholder="Enter state" required>
+                            <input type="text" placeholder="Enter state" value="{{ $defaultAddress->province ?? '' }}" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Pincode *</label>
-                            <input type="text" placeholder="Enter pincode" required>
+                            <input type="text" placeholder="Enter pincode" value="{{ $defaultAddress->postal_code ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>Country *</label>
@@ -349,53 +314,7 @@
                     </div>
                 </div>
 
-                <!-- Payment Method -->
-                <div class="form-section">
-                    <h2 class="section-title">💳 Payment Method</h2>
-                    
-                    <div class="payment-methods" id="paymentMethods">
-                        <div class="payment-method selected" onclick="selectPayment(this, 'card')">
-                            <div class="payment-icon">💳</div>
-                            <div class="payment-label">Credit/Debit Card</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPayment(this, 'upi')">
-                            <div class="payment-icon">📱</div>
-                            <div class="payment-label">UPI</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPayment(this, 'wallet')">
-                            <div class="payment-icon">👛</div>
-                            <div class="payment-label">Digital Wallet</div>
-                        </div>
-                        <div class="payment-method" onclick="selectPayment(this, 'emi')">
-                            <div class="payment-icon">📊</div>
-                            <div class="payment-label">EMI</div>
-                        </div>
-                    </div>
 
-                    <!-- Card Details -->
-                    <div id="cardDetails" style="display: block;">
-                        <div class="form-group">
-                            <label>Card Number *</label>
-                            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Expiry Date *</label>
-                                <input type="text" placeholder="MM/YY" maxlength="5" required>
-                            </div>
-                            <div class="form-group">
-                                <label>CVV *</label>
-                                <input type="text" placeholder="123" maxlength="3" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Cardholder Name *</label>
-                            <input type="text" placeholder="Name on card" required>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Order Summary -->
@@ -444,7 +363,7 @@
                 const itemTotal = item.price * item.quantity;
                 html += `
                     <div class="summary-item-detail">
-                        <div class="summary-item-img">${item.emoji}</div>
+                        <div class="summary-item-img"><img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;"></div>
                         <div class="summary-item-info">
                             <div class="summary-item-name">${item.title}</div>
                             <div class="summary-item-qty">Qty: ${item.quantity}</div>
@@ -470,17 +389,7 @@
             element.classList.add('selected');
         }
 
-        function selectPayment(element, type) {
-            document.querySelectorAll('.payment-method').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
 
-            const cardDetails = document.getElementById('cardDetails');
-            if (type === 'card') {
-                cardDetails.style.display = 'block';
-            } else {
-                cardDetails.style.display = 'none';
-            }
-        }
 
         function placeOrder() {
             const fullName = document.querySelector('input[placeholder="Enter your full name"]').value;

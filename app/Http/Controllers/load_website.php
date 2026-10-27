@@ -27,7 +27,12 @@ class load_website extends Controller
 
     function checkout()
     {
-        return view('checkout');
+        $defaultAddress = null;
+        if (auth()->check()) {
+            $defaultAddress = address::where('user_id', auth()->id())->where('is_default', true)->first() ?? address::where('user_id', auth()->id())->latest()->first();
+        }
+
+        return view('checkout', compact('defaultAddress'));
     }
 
     function order_confirm()

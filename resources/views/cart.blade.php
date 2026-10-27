@@ -369,7 +369,7 @@
                 const itemTotal = item.price * item.quantity;
                 html += `
                     <div class="cart-item">
-                        <div class="product-image-cart">${item.emoji}</div>
+                        <div class="product-image-cart"><img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;"></div>
                         <div class="product-details">
                             <div class="product-name">${item.title}</div>
                             <div class="product-description">SKU: ${item.id}</div>
