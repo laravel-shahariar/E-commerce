@@ -491,78 +491,34 @@
         </div>
     </div>
 
+    @php
+        $formattedOrders = $orders->map(function($order) {
+            return [
+                'orderNumber' => 'ORD-' . $order->id,
+                'date' => $order->created_at ? $order->created_at->toDateString() : '',
+                'status' => $order->status === 'pending' ? 'confirmed' : $order->status,
+                'items' => $order->items->map(function($item) {
+                    return [
+                        'id' => $item->product_id,
+                        'name' => $item->product ? $item->product->name : 'Product #' . $item->product_id,
+                        'price' => (float)$item->price,
+                        'quantity' => $item->quantity,
+                        'emoji' => '📦',
+                        'image' => $item->product && $item->product->image ? $item->product->image : null,
+                    ];
+                }),
+                'subtotal' => (float)$order->sub_total,
+                'tax' => (float)$order->vat,
+                'total' => (float)$order->grand_total,
+                'address' => $order->address ? $order->address->address . ', ' . $order->address->city . ', ' . $order->address->province . ' ' . $order->address->postal_code : 'N/A',
+                'customer' => $order->address ? $order->address->name : 'N/A',
+            ];
+        });
+    @endphp
+
     <script>
-        // Sample order data
-        const allOrders = [
-            {
-                orderNumber: 'ORD-1001',
-                date: '2024-09-06',
-                status: 'delivered',
-                items: [
-                    { id: 1, name: 'Samsung Galaxy S24 Ultra', price: 79999, quantity: 1, emoji: '📱' },
-                    { id: 2, name: 'Samsung Galaxy Buds2', price: 12999, quantity: 1, emoji: '🎧' }
-                ],
-                subtotal: 92998,
-                tax: 16739,
-                total: 109737,
-                address: '123 Main Street, New York, NY 10001',
-                customer: 'John Doe'
-            },
-            {
-                orderNumber: 'ORD-1002',
-                date: '2024-09-05',
-                status: 'shipped',
-                items: [
-                    { id: 3, name: 'Apple iPhone 15 Pro Max', price: 139999, quantity: 1, emoji: '📱' }
-                ],
-                subtotal: 139999,
-                tax: 25199,
-                total: 165198,
-                address: '456 Oak Avenue, Los Angeles, CA 90001',
-                customer: 'John Doe'
-            },
-            {
-                orderNumber: 'ORD-1003',
-                date: '2024-09-04',
-                status: 'processing',
-                items: [
-                    { id: 4, name: 'Sony WH-1000XM5 Headphones', price: 35000, quantity: 1, emoji: '🎧' },
-                    { id: 5, name: 'Apple AirPods Pro Max', price: 54000, quantity: 1, emoji: '🎵' }
-                ],
-                subtotal: 89000,
-                tax: 16020,
-                total: 105020,
-                address: '789 Pine Road, Chicago, IL 60601',
-                customer: 'John Doe'
-            },
-            {
-                orderNumber: 'ORD-1004',
-                date: '2024-09-03',
-                status: 'delivered',
-                items: [
-                    { id: 6, name: 'Samsung QLED 4K TV 65 Inch', price: 89000, quantity: 1, emoji: '📺' }
-                ],
-                subtotal: 89000,
-                tax: 16020,
-                total: 105020,
-                address: '321 Elm Street, Houston, TX 77001',
-                customer: 'John Doe'
-            },
-            {
-                orderNumber: 'ORD-1005',
-                date: '2024-09-02',
-                status: 'confirmed',
-                items: [
-                    { id: 7, name: 'Nike Air Jordan 1', price: 15999, quantity: 2, emoji: '👟' },
-                    { id: 8, name: 'Adidas Ultra Boost', price: 13999, quantity: 1, emoji: '👟' }
-                ],
-                subtotal: 45997,
-                tax: 8279,
-                total: 54276,
-                address: '654 Maple Drive, Phoenix, AZ 85001',
-                customer: 'John Doe'
-            }
-        ];
+        // Dynamic order data from database
+        const allOrders = @json($formattedOrders);
 
         let filteredOrders = allOrders;
         let currentFilter = 'all';

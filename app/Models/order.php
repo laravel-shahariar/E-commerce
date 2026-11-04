@@ -13,4 +13,8 @@ class order extends Model
     public function items() {
         return $this->hasMany(ordered_item::class);
     }
+
+    public function address() {
+        return $this->belongsTo(address::class);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\product;
 use App\Models\address;
+use App\Models\order;
 
 class load_website extends Controller
 {
@@ -42,7 +43,9 @@ class load_website extends Controller
 
     function orders()
     {
-        return view('my-orders');
+        $orders = order::with(['items.product', 'address'])->where('user_id', auth()->id())->latest()->get();
+
+        return view('my-orders', compact('orders'));
     }
 
     function account()
