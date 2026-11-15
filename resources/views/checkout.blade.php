@@ -240,44 +240,44 @@
                     
                     <div class="form-group">
                         <label>Full Name *</label>
-                        <input type="text" placeholder="Enter your full name" value="{{ $defaultAddress->name ?? '' }}" required>
+                        <input type="text" id="shipping_name" placeholder="Enter your full name" value="{{ $defaultAddress->name ?? '' }}" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Email *</label>
-                            <input type="email" placeholder="your@email.com" value="{{ $defaultAddress->email ?? '' }}" required>
+                            <input type="email" id="shipping_email" placeholder="your@email.com" value="{{ $defaultAddress->email ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>Phone *</label>
-                            <input type="tel" placeholder="+91 98765 43210" value="{{ $defaultAddress->phone_number ?? '' }}" required>
+                            <input type="tel" id="shipping_phone" placeholder="+91 98765 43210" value="{{ $defaultAddress->phone_number ?? '' }}" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Address *</label>
-                        <input type="text" placeholder="House No., Building Name" value="{{ $defaultAddress->address ?? '' }}" required>
+                        <input type="text" id="shipping_address" placeholder="House No., Building Name" value="{{ $defaultAddress->address ?? '' }}" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>City *</label>
-                            <input type="text" placeholder="Enter city" value="{{ $defaultAddress->city ?? '' }}" required>
+                            <input type="text" id="shipping_city" placeholder="Enter city" value="{{ $defaultAddress->city ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>State *</label>
-                            <input type="text" placeholder="Enter state" value="{{ $defaultAddress->province ?? '' }}" required>
+                            <input type="text" id="shipping_state" placeholder="Enter state" value="{{ $defaultAddress->province ?? '' }}" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label>Pincode *</label>
-                            <input type="text" placeholder="Enter pincode" value="{{ $defaultAddress->postal_code ?? '' }}" required>
+                            <input type="text" id="shipping_pincode" placeholder="Enter pincode" value="{{ $defaultAddress->postal_code ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label>Country *</label>
-                            <select required>
+                            <select id="shipping_country" required>
                                 <option>India</option>
                                 <option>USA</option>
                                 <option>UK</option>
@@ -287,9 +287,10 @@
                     </div>
 
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 400;">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" id="shipping_primary" checked>
                         <span>This is my primary address</span>
                     </label>
+                    <input type="hidden" id="shipping_address_id" value="{{ $defaultAddress->id ?? '' }}">
                 </div>
 
                 <!-- Shipping Method -->
@@ -392,9 +393,18 @@
 
 
         function placeOrder() {
-            const fullName = document.querySelector('input[placeholder="Enter your full name"]').value;
-            const email = document.querySelector('input[placeholder="your@email.com"]').value;
-            const address = document.querySelector('input[placeholder="House No., Building Name"]').value;
+            const fullName = document.getElementById('shipping_name') ? document.getElementById('shipping_name').value.trim() : (document.querySelector('input[placeholder="Enter your full name"]')?.value.trim() || '');
+            const email = document.getElementById('shipping_email') ? document.getElementById('shipping_email').value.trim() : (document.querySelector('input[placeholder="your@email.com"]')?.value.trim() || '');
+            const phone = document.getElementById('shipping_phone') ? document.getElementById('shipping_phone').value.trim() : (document.querySelector('input[placeholder="+91 98765 43210"]')?.value.trim() || '');
+            const address = document.getElementById('shipping_address') ? document.getElementById('shipping_address').value.trim() : (document.querySelector('input[placeholder="House No., Building Name"]')?.value.trim() || '');
+            const city = document.getElementById('shipping_city') ? document.getElementById('shipping_city').value.trim() : (document.querySelector('input[placeholder="Enter city"]')?.value.trim() || '');
+            const state = document.getElementById('shipping_state') ? document.getElementById('shipping_state').value.trim() : (document.querySelector('input[placeholder="Enter state"]')?.value.trim() || '');
+            const pincode = document.getElementById('shipping_pincode') ? document.getElementById('shipping_pincode').value.trim() : (document.querySelector('input[placeholder="Enter pincode"]')?.value.trim() || '');
+            const country = document.getElementById('shipping_country') ? document.getElementById('shipping_country').value : (document.querySelector('select')?.value || 'India');
+            const isPrimary = document.getElementById('shipping_primary') ? document.getElementById('shipping_primary').checked : true;
+            const addressId = document.getElementById('shipping_address_id') ? document.getElementById('shipping_address_id').value : '';
+            const shippingRadio = document.querySelector('input[name="shipping"]:checked');
+            const shippingMethod = shippingRadio ? shippingRadio.value : 'standard';
 
             if (!fullName || !email || !address) {
                 alert('Please fill in all required fields');
@@ -406,25 +416,84 @@
                 return;
             }
 
-            // Save order details to localStorage
-            const orderData = {
-                orderDate: new Date().toISOString(),
-                orderNumber: 'ORD-' + Date.now(),
-                customerName: fullName,
-                customerEmail: email,
-                items: cartItems,
-                subtotal: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-                tax: Math.round(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.18),
-                total: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 
-                       Math.round(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.18),
-                status: 'Confirmed'
+            const placeBtn = document.querySelector('.place-order-btn');
+            if (placeBtn) {
+                placeBtn.disabled = true;
+                placeBtn.textContent = 'Placing Order...';
+            }
+
+            const payload = {
+                name: fullName,
+                email: email,
+                phone_number: phone,
+                address: address,
+                city: city || 'City',
+                province: state || 'State',
+                postal_code: pincode || '000000',
+                country: country,
+                is_primary: isPrimary,
+                address_id: addressId,
+                shipping: shippingMethod,
+                items: cartItems
             };
 
-            localStorage.setItem('lastOrder', JSON.stringify(orderData));
-            localStorage.removeItem('cartItems');
+            fetch('{{ route("place.order") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if (res.status === 401) {
+                    window.location.href = '{{ route("login") }}';
+                    return null;
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (!data) return;
 
-            // Redirect to order confirmation 
-            window.location.href = '/order-confirm';
+                if (data.success) {
+                    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const tax = Math.round(subtotal * 0.18);
+                    const total = subtotal + tax;
+
+                    const orderData = {
+                        orderDate: new Date().toISOString(),
+                        orderNumber: data.order_number || ('ORD-' + data.order_id),
+                        customerName: fullName,
+                        customerEmail: email,
+                        customerCity: (city ? city : '') + (state ? (city ? ', ' : '') + state : '') + (pincode ? ' ' + pincode : ''),
+                        customerCountry: country,
+                        items: cartItems,
+                        subtotal: subtotal,
+                        tax: tax,
+                        total: total,
+                        status: 'Confirmed'
+                    };
+
+                    localStorage.setItem('lastOrder', JSON.stringify(orderData));
+                    localStorage.removeItem('cartItems');
+
+                    window.location.href = data.redirect || '{{ url("/order-confirm") }}';
+                } else {
+                    alert(data.message || 'Failed to place order. Please try again.');
+                    if (placeBtn) {
+                        placeBtn.disabled = false;
+                        placeBtn.textContent = 'Place Order';
+                    }
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Something went wrong while placing order. Please try again.');
+                if (placeBtn) {
+                    placeBtn.disabled = false;
+                    placeBtn.textContent = 'Place Order';
+                }
+            });
         }
 
         window.addEventListener('load', loadCart);

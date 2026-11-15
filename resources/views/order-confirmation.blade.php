@@ -361,11 +361,11 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">City:</span>
-                    <span class="detail-value">New York, NY 10001</span>
+                    <span class="detail-value" id="customerCity">New York, NY 10001</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Country:</span>
-                    <span class="detail-value">United States</span>
+                    <span class="detail-value" id="customerCountry">India</span>
                 </div>
             </div>
         </div>
@@ -440,14 +440,42 @@
 
         <!-- Actions -->
         <div class="actions">
-            <button class="btn btn-primary" onclick="window.location.href='index.html'">Continue Shopping</button>
+            <button class="btn btn-primary" onclick="window.location.href='/'">Continue Shopping</button>
             <button class="btn btn-secondary" onclick="printOrder()">Print Order</button>
         </div>
     </div>
 
     <script>
+        @if(isset($order) && $order)
+            const dbOrder = {
+                orderNumber: 'ORD-{{ $order->id }}',
+                orderDate: '{{ $order->created_at->format("M d, Y") }}',
+                customerName: '{{ $order->address ? $order->address->name : "" }}',
+                customerEmail: '{{ $order->address ? $order->address->email : "" }}',
+                customerCity: '{{ $order->address ? ($order->address->city . ($order->address->province ? ", " . $order->address->province : "") . ($order->address->postal_code ? " " . $order->address->postal_code : "")) : "" }}',
+                customerCountry: 'India',
+                items: [
+                    @foreach($order->items as $item)
+                    {
+                        id: {{ $item->product_id }},
+                        title: @json($item->product ? $item->product->name : ('Product #' . $item->product_id)),
+                        price: {{ (float)$item->price }},
+                        quantity: {{ $item->quantity }},
+                        emoji: '📦',
+                        image: @json($item->image ?? ($item->product ? $item->product->image : null))
+                    },
+                    @endforeach
+                ],
+                subtotal: {{ (float)$order->sub_total }},
+                tax: {{ (float)$order->vat }},
+                total: {{ (float)$order->grand_total }}
+            };
+        @else
+            const dbOrder = null;
+        @endif
+
         function loadOrder() {
-            const orderData = JSON.parse(localStorage.getItem('lastOrder') || '{}');
+            const orderData = dbOrder || JSON.parse(localStorage.getItem('lastOrder') || '{}');
 
             if (!orderData.orderNumber) {
                 // Demo data
@@ -472,14 +500,24 @@
             document.getElementById('orderNumber').textContent = orderData.orderNumber;
             document.getElementById('customerName').textContent = orderData.customerName;
             document.getElementById('customerEmail').textContent = orderData.customerEmail;
+            if (document.getElementById('customerCity') && orderData.customerCity) {
+                document.getElementById('customerCity').textContent = orderData.customerCity;
+            }
+            if (document.getElementById('customerCountry') && orderData.customerCountry) {
+                document.getElementById('customerCountry').textContent = orderData.customerCountry;
+            }
 
-            const today = new Date();
-            const dateStr = today.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
-                year: 'numeric' 
-            });
-            document.getElementById('orderDate').textContent = dateStr;
+            if (orderData.orderDate) {
+                document.getElementById('orderDate').textContent = orderData.orderDate;
+            } else {
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+                document.getElementById('orderDate').textContent = dateStr;
+            }
 
             // Render items
             const itemsContainer = document.getElementById('orderItemsContainer');
@@ -487,9 +525,13 @@
 
             orderData.items.forEach(item => {
                 const itemTotal = item.price * item.quantity;
+                const imgDisplay = item.image 
+                    ? `<img src="/photo/${item.image.replace(/^\//, '')}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">` 
+                    : (item.emoji || '📦');
+
                 itemsHtml += `
                     <div class="order-item">
-                        <div class="product-image">${item.emoji}</div>
+                        <div class="product-image">${imgDisplay}</div>
                         <div class="product-info">
                             <div class="product-name">${item.title}</div>
                             <div class="product-sku">SKU: ${item.id}</div>

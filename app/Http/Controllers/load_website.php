@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\product;
 use App\Models\address;
 use App\Models\order;
+use App\Models\ordered_item;
 
 class load_website extends Controller
 {
@@ -28,17 +29,153 @@ class load_website extends Controller
 
     function checkout()
     {
-        $defaultAddress = null;
-        if (auth()->check()) {
-            $defaultAddress = address::where('user_id', auth()->id())->where('is_default', true)->first() ?? address::where('user_id', auth()->id())->latest()->first();
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
+
+        $defaultAddress = address::where('user_id', auth()->id())->where('is_default', true)->first() ?? address::where('user_id', auth()->id())->latest()->first();
 
         return view('checkout', compact('defaultAddress'));
     }
 
-    function order_confirm()
+    function order_confirm(Request $request)
     {
-        return view('order-confirmation');
+        $orderId = $request->query('order_id') ?? session('last_order_id');
+        $order = null;
+        if ($orderId && auth()->check()) {
+            $order = order::with(['items.product', 'address'])->where('user_id', auth()->id())->find($orderId);
+        }
+        if (!$order && auth()->check()) {
+            $order = order::with(['items.product', 'address'])->where('user_id', auth()->id())->latest()->first();
+        }
+
+        return view('order-confirmation', compact('order'));
+    }
+
+    function place_order(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please log in to place an order.',
+                'redirect' => route('login'),
+            ], 401);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone_number' => 'required|string|max:20',
+            'address' => 'required|string',
+            'city' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'items' => 'required|array|min:1',
+            'items.*.id' => 'required',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric',
+        ]);
+
+        $userId = auth()->id();
+
+        // 1. Manage Address using address model
+        $isPrimary = $request->boolean('is_primary');
+        if ($isPrimary) {
+            address::where('user_id', $userId)->update(['is_default' => false]);
+        }
+
+        $address = null;
+        if ($request->filled('address_id')) {
+            $address = address::where('user_id', $userId)->find($request->address_id);
+        }
+
+        if (!$address) {
+            $address = address::where('user_id', $userId)
+                ->where('address', $request->address)
+                ->where('city', $request->city)
+                ->where('postal_code', $request->postal_code)
+                ->first();
+        }
+
+        if (!$address) {
+            $address = new address();
+            $address->user_id = $userId;
+        }
+
+        $address->name = $request->name;
+        $address->email = $request->email;
+        $address->phone_number = $request->phone_number;
+        $address->address = $request->address;
+        $address->city = $request->city;
+        $address->province = $request->province;
+        $address->district = $request->district ?? $request->city;
+        $address->postal_code = $request->postal_code;
+        if ($isPrimary || address::where('user_id', $userId)->count() === 0) {
+            $address->is_default = true;
+        }
+        $address->save();
+
+        // 2. Calculate totals
+        $subtotal = 0;
+        foreach ($request->items as $item) {
+            $subtotal += ((float)$item['price'] * (int)$item['quantity']);
+        }
+        $tax = round($subtotal * 0.18, 2);
+        $deliveryCharge = ($request->shipping === 'express') ? 50.00 : 0.00;
+        $discount = 0.00;
+        $grandTotal = $subtotal + $tax + $deliveryCharge - $discount;
+
+        // 3. Create Order using order model
+        $order = new order();
+        $order->user_id = $userId;
+        $order->address_id = $address->id;
+        $order->status = 'pending';
+        $order->total_price = $subtotal;
+        $order->delivery_charge = $deliveryCharge;
+        $order->sub_total = $subtotal;
+        $order->discount = $discount;
+        $order->vat = $tax;
+        $order->grand_total = $grandTotal;
+        $order->save();
+
+        // 4. Create Order Items using ordered_item model
+        foreach ($request->items as $itemData) {
+            $prod = product::find($itemData['id']);
+            $itemPrice = (float)$itemData['price'];
+            $qty = (int)$itemData['quantity'];
+            $itemTotal = $itemPrice * $qty;
+
+            $orderedItem = new ordered_item();
+            $orderedItem->order_id = $order->id;
+            $orderedItem->product_id = $itemData['id'];
+            $orderedItem->quantity = $qty;
+            $orderedItem->price = $itemPrice;
+            $orderedItem->discount_price = $prod ? $prod->discount_price : null;
+            $orderedItem->total_price = $itemTotal;
+            $orderedItem->image = $prod && $prod->image ? $prod->image : ($itemData['image'] ?? null);
+            $orderedItem->images = $prod ? $prod->images : null;
+            $orderedItem->status = 'pending';
+            $orderedItem->views = 0;
+            $orderedItem->sold_count = 0;
+            $orderedItem->save();
+
+            if ($prod) {
+                $prod->increment('sold_count', $qty);
+                if ($prod->stock >= $qty) {
+                    $prod->decrement('stock', $qty);
+                }
+            }
+        }
+
+        session(['last_order_id' => $order->id]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order placed successfully!',
+            'order_id' => $order->id,
+            'order_number' => 'ORD-' . $order->id,
+            'redirect' => url('/order-confirm?order_id=' . $order->id),
+        ]);
     }
 
     function orders()
