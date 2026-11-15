@@ -602,7 +602,7 @@
                                 <div class="order-items">
                                     ${order.items.map(item => `
                                         <div class="order-item">
-                                            <div class="item-image">${item.emoji}</div>
+                                            <div class="item-image">${item.image ? `<img src="/photo/${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">` : item.emoji}</div>
                                             <div class="item-info">
                                                 <div class="item-name">${item.name}</div>
                                                 <div class="item-sku">SKU: ${item.id}</div>
