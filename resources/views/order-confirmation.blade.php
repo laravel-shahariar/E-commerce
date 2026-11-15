@@ -337,11 +337,23 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Order Date:</span>
-                    <span class="detail-value" id="orderDate">Sept 06, 2024</span>
+                    <span class="detail-value" id="orderDate">
+                        @if(isset($order) && $order)
+                            {{ $order->created_at->format('M d, Y') }}
+                        @else
+                            Order date
+                        @endif
+                    </span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Estimated Delivery:</span>
-                    <span class="detail-value">Sept 10, 2024</span>
+                    <span class="detail-value">
+                        @if(isset($order) && $order)
+                            {{ $order->created_at->addDays(4)->format('M d, Y') }}
+                        @else
+                            Estimated delivery
+                        @endif
+                    </span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Payment Status:</span>
@@ -378,7 +390,13 @@
                     <div class="timeline-dot active">✓</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Order Confirmed</div>
-                        <div class="timeline-date">Sept 06, 2024 - 2:30 PM</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                {{ $order->created_at->format('M d, Y') }} - {{ $order->created_at->format('g:i A') }}
+                            @else
+                                Order date
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -386,7 +404,13 @@
                     <div class="timeline-dot active">✓</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Payment Received</div>
-                        <div class="timeline-date">Sept 06, 2024 - 2:35 PM</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                {{ $order->created_at->addMinutes(5)->format('M d, Y') }} - {{ $order->created_at->addMinutes(5)->format('g:i A') }}
+                            @else
+                                Payment date
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -394,7 +418,13 @@
                     <div class="timeline-dot">📦</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Processing Order</div>
-                        <div class="timeline-date">Estimated: Sept 07, 2024</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                Estimated: {{ $order->created_at->addDay()->format('M d, Y') }}
+                            @else
+                                Estimated: Next day
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -402,7 +432,13 @@
                     <div class="timeline-dot pending">🚚</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Shipped</div>
-                        <div class="timeline-date">Estimated: Sept 08, 2024</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                Estimated: {{ $order->created_at->addDays(2)->format('M d, Y') }}
+                            @else
+                                Estimated: 2 days after order
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -410,7 +446,13 @@
                     <div class="timeline-dot pending">📍</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Out for Delivery</div>
-                        <div class="timeline-date">Estimated: Sept 09-10, 2024</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                Estimated: {{ $order->created_at->addDays(3)->format('M d') }}-{{ $order->created_at->addDays(4)->format('d, Y') }}
+                            @else
+                                Estimated: 3-4 days after order
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -418,7 +460,13 @@
                     <div class="timeline-dot pending">✓</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Delivered</div>
-                        <div class="timeline-date">Estimated: Sept 10, 2024</div>
+                        <div class="timeline-date">
+                            @if(isset($order) && $order)
+                                Estimated: {{ $order->created_at->addDays(4)->format('M d, Y') }}
+                            @else
+                                Estimated: 4 days after order
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
