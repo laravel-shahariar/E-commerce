@@ -14,10 +14,10 @@
         <div class="header-top">
             <a href="/" class="logo">Ecommerce</a>
             <div class="header-center">
-                <div class="search-bar" action="{{ route('search') }}" >
-                    <input type="text" name="s" placeholder="Search for any product or brand">
+                <form class="search-bar" action="{{ route('search') }}" method="GET">
+                    <input type="text" name="search" value="{{ request('search') ?? request('q') ?? '' }}" placeholder="Search for any product or brand">
                     <button type="submit">Search</button>
-                </div>
+                </form>
             </div>
             <div class="header-right">
                 <a href="/wishlist" class="header-icon">

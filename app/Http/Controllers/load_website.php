@@ -347,12 +347,9 @@ class load_website extends Controller
         if (!empty(trim($query))) {
             $searchTerm = trim($query);
             $products = product::where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('category', function ($sub) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')->orWhere('description', 'like', '%' . $searchTerm . '%')->orWhereHas('category', function ($sub) use ($searchTerm) {
                         $sub->where('name', 'like', '%' . $searchTerm . '%');
-                    })
-                    ->orWhereHas('brand', function ($sub) use ($searchTerm) {
+                    })->orWhereHas('brand', function ($sub) use ($searchTerm) {
                         $sub->where('name', 'like', '%' . $searchTerm . '%');
                     });
             })->get();
