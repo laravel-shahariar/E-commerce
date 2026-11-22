@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\product;
+use App\Models\category;
 use App\Models\address;
 use App\Models\order;
 use App\Models\ordered_item;
@@ -329,9 +330,31 @@ class load_website extends Controller
         return redirect()->back()->with('success', 'Default address updated successfully!');
     }
 
-    function category($category_name)
+    function category(Request $request, $category_name)
     {
-        return view('category', compact('category_name'));
+        $query = product::query();
+
+        if ($category_name !== 'all') {
+            $cat = category::where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%')->first();
+
+            if ($cat) {
+                $query->where('category_id', $cat->id);
+            } else {
+                $query->whereHas('category', function ($q) use ($category_name) {
+                    $q->where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%');
+                });
+            }
+        }
+
+        $products = $query->get();
+
+        $maxProductPrice = product::max('price');
+        $sliderMax = $maxProductPrice ? (int)ceil($maxProductPrice) : 10000;
+        if ($sliderMax < 10000) {
+            $sliderMax = 10000;
+        }
+
+        return view('category', compact('category_name', 'products', 'sliderMax'));
     }
 
     function wishlist()

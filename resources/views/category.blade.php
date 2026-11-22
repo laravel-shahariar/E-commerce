@@ -231,16 +231,16 @@
 @section('navigation')                   
 <!-- Navigation -->
 <nav class="nav-categories">
-    <a href="/category/all" class="active">All Categories</a>
-    <a href="/category/electronics">Electronics</a>
-    <a href="/category/fashion">Fashion</a>
-    <a href="/category/home-decor">Home & Decor</a>
-    <a href="/category/health-beauty">Health & Beauty</a>
-    <a href="/category/sports">Sports</a>
-    <a href="/category/books">Books</a>
-    <a href="/category/pharmacy">Pharmacy</a>
-    <a href="/category/groceries">Groceries</a>
-    <a href="/category/luxury-items">Luxury Items</a>
+    <a href="/category/all" class="{{ $category_name == 'all' ? 'active' : '' }}">All Categories</a>
+    <a href="/category/electronics" class="{{ $category_name == 'electronics' ? 'active' : '' }}">Electronics</a>
+    <a href="/category/fashion" class="{{ $category_name == 'fashion' ? 'active' : '' }}">Fashion</a>
+    <a href="/category/home-decor" class="{{ $category_name == 'home-decor' ? 'active' : '' }}">Home & Decor</a>
+    <a href="/category/health-beauty" class="{{ $category_name == 'health-beauty' ? 'active' : '' }}">Health & Beauty</a>
+    <a href="/category/sports" class="{{ $category_name == 'sports' ? 'active' : '' }}">Sports</a>
+    <a href="/category/books" class="{{ $category_name == 'books' ? 'active' : '' }}">Books</a>
+    <a href="/category/pharmacy" class="{{ $category_name == 'pharmacy' ? 'active' : '' }}">Pharmacy</a>
+    <a href="/category/groceries" class="{{ $category_name == 'groceries' ? 'active' : '' }}">Groceries</a>
+    <a href="/category/luxury-items" class="{{ $category_name == 'luxury-items' ? 'active' : '' }}">Luxury Items</a>
 </nav>
 @endsection
 
@@ -250,8 +250,8 @@
         <!-- Page Header -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">{{ $category_name == "all" ? "All Categories" : ucWords($category_name) }}</h1>
-                <div class="products-count">Showing 24 products</div>
+                <h1 class="page-title">{{ $category_name == "all" ? "All Categories" : ucWords(str_replace('-', ' ', $category_name)) }}</h1>
+                <div class="products-count">Showing {{ $products->count() }} product{{ $products->count() !== 1 ? 's' : '' }}</div>
             </div>
         </div>
 
@@ -262,10 +262,10 @@
                 <div class="filter-group">
                     <div class="filter-title">📊 Price Range</div>
                     <div class="price-slider">
-                        <input type="range" min="0" max="200000" value="200000">
+                        <input type="range" min="0" max="{{ $sliderMax ?? 10000 }}" value="{{ request('max_price', $sliderMax ?? 10000) }}">
                         <div class="price-values">
                             <span>₹0</span>
-                            <span>₹<span id="maxPrice">200000</span></span>
+                            <span>₹<span id="maxPrice">{{ number_format(request('max_price', $sliderMax ?? 10000)) }}</span></span>
                         </div>
                     </div>
                 </div>
@@ -353,7 +353,19 @@
 
                 <!-- Products Grid -->
                 <div class="products-grid" id="productsGrid">
-                    <!-- Products will be loaded here -->
+                    @forelse($products as $product)
+                        <x-preview
+                            :link="url('/product/' . $product->id)"
+                            :photo="$product->image"
+                            :title="$product->name"
+                            :discount="$product->discount_price ? round((($product->price - $product->discount_price) / $product->price) * 100) : 0"
+                            :review="$product->reviews ?? 0"
+                            :price="$product->discount_price ?? $product->price"
+                            :original_price="$product->discount_price ? $product->price : null"
+                        />
+                    @empty
+                        <p class="no-products-msg" style="grid-column: 1 / -1; text-align: center; color: var(--text-light); padding: 40px 0;">No products found in this category.</p>
+                    @endforelse
                 </div>
 
                 <!-- Pagination -->
@@ -369,175 +381,80 @@
     </div>
 
     <script>
-        // Sample products
-        const products = [
-            {
-                id: 1,
-                name: 'Samsung Galaxy S24 Ultra',
-                price: 79999,
-                originalPrice: 99999,
-                discount: 20,
-                rating: 4.8,
-                emoji: '📱'
-            },
-            {
-                id: 2,
-                name: 'Apple iPhone 15 Pro Max',
-                price: 139999,
-                originalPrice: 165000,
-                discount: 15,
-                rating: 4.9,
-                emoji: '📱'
-            },
-            {
-                id: 3,
-                name: 'Google Pixel 8 Pro',
-                price: 79999,
-                originalPrice: 94999,
-                discount: 15,
-                rating: 4.7,
-                emoji: '📱'
-            },
-            {
-                id: 4,
-                name: 'Sony WH-1000XM5 Headphones',
-                price: 35000,
-                originalPrice: 42000,
-                discount: 17,
-                rating: 4.7,
-                emoji: '🎧'
-            },
-            {
-                id: 5,
-                name: 'Apple AirPods Pro Max',
-                price: 54000,
-                originalPrice: 64000,
-                discount: 15,
-                rating: 4.8,
-                emoji: '🎵'
-            },
-            {
-                id: 6,
-                name: 'Samsung QLED 4K TV 65 Inch',
-                price: 89000,
-                originalPrice: 125000,
-                discount: 28,
-                rating: 4.6,
-                emoji: '📺'
-            },
-            {
-                id: 7,
-                name: 'iPad Pro 12.9 inch',
-                price: 99999,
-                originalPrice: 129999,
-                discount: 23,
-                rating: 4.8,
-                emoji: '⌨️'
-            },
-            {
-                id: 8,
-                name: 'Samsung Galaxy Tab S9',
-                price: 54999,
-                originalPrice: 69999,
-                discount: 21,
-                rating: 4.6,
-                emoji: '📱'
-            },
-            {
-                id: 9,
-                name: 'MacBook Pro 14 inch',
-                price: 199999,
-                originalPrice: 239999,
-                discount: 17,
-                rating: 4.9,
-                emoji: '💻'
-            },
-            {
-                id: 10,
-                name: 'Dell XPS 15',
-                price: 149999,
-                originalPrice: 179999,
-                discount: 17,
-                rating: 4.7,
-                emoji: '💻'
-            },
-            {
-                id: 11,
-                name: 'NVIDIA GeForce RTX 4090',
-                price: 199999,
-                originalPrice: 249999,
-                discount: 20,
-                rating: 4.8,
-                emoji: '🎮'
-            },
-            {
-                id: 12,
-                name: 'PlayStation 5',
-                price: 49999,
-                originalPrice: 59999,
-                discount: 17,
-                rating: 4.7,
-                emoji: '🎮'
-            }
-        ];
+        const priceSlider = document.querySelector('.price-slider input[type="range"]');
+        const maxPriceDisplay = document.getElementById('maxPrice');
+        const productsCountDisplay = document.querySelector('.products-count');
 
-        function renderProducts() {
-            const container = document.getElementById('productsGrid');
-            container.innerHTML = products.map(product => `
-                <div class="product-card" onclick="viewProduct(${product.id})">
-                    <div class="product-image">
-                        ${product.emoji}
-                        <span class="product-badge">-${product.discount}%</span>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-title">${product.name}</p>
-                        <div class="product-rating">
-                            <span>★★★★★</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="price">₹${product.price.toLocaleString()}</span>
-                            <span class="original-price">₹${product.originalPrice.toLocaleString()}</span>
-                        </div>
-                        <button class="product-btn" onclick="event.stopPropagation(); addToCart(${product.id})">Add to Cart</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+        function filterByPrice() {
+            const maxVal = parseFloat(priceSlider.value);
+            maxPriceDisplay.textContent = Number(maxVal).toLocaleString();
 
-        function viewProduct(id) {
-            window.location.href = 'product-detail.html?id=' + id;
-        }
+            // select product according to price 
+            const cards = document.querySelectorAll('#productsGrid .product-card');
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const price = parseFloat(card.querySelector('.price').textContent.replace(/[^0-9.]/g, '')) || 0;
+                if (price <= maxVal) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
 
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            
-            const item = {
-                id: product.id,
-                title: product.name,
-                price: product.price,
-                quantity: 1,
-                emoji: product.emoji
-            };
-
-            const existing = cartItems.find(i => i.id === item.id);
-            if (existing) {
-                existing.quantity += 1;
-            } else {
-                cartItems.push(item);
+            // show category name and product count 
+            if (productsCountDisplay) {
+                productsCountDisplay.textContent = 'Showing ' + visibleCount + ' product' + (visibleCount !== 1 ? 's' : '');
             }
 
-            localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            alert('✓ Added to cart!');
+            // empty message 
+            let emptyMsg = document.getElementById('priceFilterEmptyMsg');
+            if (visibleCount === 0 && cards.length > 0) {
+                console.log(((cards.length)))
+                if (!emptyMsg) {
+                    // create 
+                    emptyMsg = document.createElement('p');
+                    emptyMsg.id = 'priceFilterEmptyMsg';
+                    emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; color: var(--text-light); padding: 40px 0;';
+                    emptyMsg.textContent = 'No products found in this price range.';
+                    document.getElementById('productsGrid').appendChild(emptyMsg);
+                } else {
+                    emptyMsg.style.display = '';
+                }
+            } else if (emptyMsg) {
+                emptyMsg.style.display = 'none';
+            }
         }
 
+        priceSlider.addEventListener('input', filterByPrice);
+        // Apply on initial load if slider value is different from max
+        filterByPrice();
+
+        // clear 
         function clearFilters() {
+            priceSlider.value = priceSlider.max;
+            filterByPrice();
             document.querySelectorAll('.filter-option input').forEach(input => {
                 input.checked = false;
             });
-            document.getElementById('stock1').checked = true;
+            const stock1 = document.getElementById('stock1');
+            if (stock1) stock1.checked = true;
         }
 
-        window.addEventListener('load', renderProducts);
+        // sort 
+        const sortSelect = document.querySelector('.sort-select');
+        sortSelect.addEventListener('change', function() {
+            const grid = document.getElementById('productsGrid');
+            const cards = Array.from(grid.querySelectorAll('.product-card'));
+            const val = this.value;
+            cards.sort((a, b) => {
+                const priceA = parseFloat(a.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
+                const priceB = parseFloat(b.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
+                if (val === 'Price: Low to High') return priceA - priceB;
+                if (val === 'Price: High to Low') return priceB - priceA;
+                return 0;
+            });
+            cards.forEach(card => grid.appendChild(card));
+        });
     </script>
 @endsection
