@@ -318,12 +318,12 @@
                     <div class="filter-option">
                         <input type="checkbox" id="stock1" checked>
                         <label class="filter-label" for="stock1">In Stock</label>
-                        <span class="filter-count">(1856)</span>
+                        <span class="filter-count">({{ $products->filter(fn($p) => (int)$p->stock > 0)->count() }})</span>
                     </div>
                     <div class="filter-option">
                         <input type="checkbox" id="stock2">
                         <label class="filter-label" for="stock2">Out of Stock</label>
-                        <span class="filter-count">(234)</span>
+                        <span class="filter-count">({{ $products->filter(fn($p) => (int)$p->stock <= 0)->count() }})</span>
                     </div>
                 </div>
 
@@ -384,17 +384,53 @@
         const priceSlider = document.querySelector('.price-slider input[type="range"]');
         const maxPriceDisplay = document.getElementById('maxPrice');
         const productsCountDisplay = document.querySelector('.products-count');
+        const stock1Checkbox = document.getElementById('stock1');
+        const stock2Checkbox = document.getElementById('stock2');
 
-        function filterByPrice() {
-            const maxVal = parseFloat(priceSlider.value);
-            maxPriceDisplay.textContent = Number(maxVal).toLocaleString();
+        // Associate stock data with each product card
+        const productStockMap = @json($products->pluck('stock', 'id'));
+        const productStockList = @json($products->map(fn($p) => (int)$p->stock));
+        const allCards = document.querySelectorAll('#productsGrid .product-card');
+        allCards.forEach((card, index) => {
+            const href = card.getAttribute('href') || '';
+            const match = href.match(/\/product\/(\d+)/);
+            const prodId = match ? match[1] : null;
+            if (prodId && productStockMap[prodId] !== undefined) {
+                card.dataset.stock = productStockMap[prodId];
+            } else if (productStockList[index] !== undefined) {
+                card.dataset.stock = productStockList[index];
+            } else {
+                card.dataset.stock = 1;
+            }
+        });
 
-            // select product according to price 
+        function filterProducts() {
+            const maxVal = priceSlider ? parseFloat(priceSlider.value) : Infinity;
+            if (maxPriceDisplay && priceSlider) {
+                maxPriceDisplay.textContent = Number(maxVal).toLocaleString();
+            }
+
             const cards = document.querySelectorAll('#productsGrid .product-card');
             let visibleCount = 0;
             cards.forEach(card => {
                 const price = parseFloat(card.querySelector('.price').textContent.replace(/[^0-9.]/g, '')) || 0;
-                if (price <= maxVal) {
+                const stock = parseInt(card.dataset.stock ?? '1', 10);
+                const isAvailable = stock > 0;
+
+                // Price filter
+                const matchesPrice = price <= maxVal;
+
+                // Availability filter 
+                const inStock = stock1Checkbox ? stock1Checkbox.checked : false;
+                const outOfStock = stock2Checkbox ? stock2Checkbox.checked : false;
+                let matchesStock = true;
+                if (inStock && !outOfStock) {
+                    matchesStock = isAvailable;
+                } else if (!inStock && outOfStock) {
+                    matchesStock = !isAvailable;
+                }
+
+                if (matchesPrice && matchesStock) {
                     card.style.display = '';
                     visibleCount++;
                 } else {
@@ -410,13 +446,12 @@
             // empty message 
             let emptyMsg = document.getElementById('priceFilterEmptyMsg');
             if (visibleCount === 0 && cards.length > 0) {
-                console.log(((cards.length)))
                 if (!emptyMsg) {
                     // create 
                     emptyMsg = document.createElement('p');
                     emptyMsg.id = 'priceFilterEmptyMsg';
                     emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; color: var(--text-light); padding: 40px 0;';
-                    emptyMsg.textContent = 'No products found in this price range.';
+                    emptyMsg.textContent = 'No products found matching the selected filters.';
                     document.getElementById('productsGrid').appendChild(emptyMsg);
                 } else {
                     emptyMsg.style.display = '';
@@ -426,19 +461,24 @@
             }
         }
 
-        priceSlider.addEventListener('input', filterByPrice);
-        // Apply on initial load if slider value is different from max
-        filterByPrice();
+        priceSlider.addEventListener('input', filterProducts);
+        stock1Checkbox.addEventListener('change', filterProducts);
+        stock2Checkbox.addEventListener('change', filterProducts);
+
+        // Apply on initial load if slider value or availability filter is set
+        filterProducts();
 
         // clear 
         function clearFilters() {
-            priceSlider.value = priceSlider.max;
-            filterByPrice();
+            if (priceSlider) {
+                priceSlider.value = priceSlider.max;
+            }
             document.querySelectorAll('.filter-option input').forEach(input => {
                 input.checked = false;
             });
             const stock1 = document.getElementById('stock1');
             if (stock1) stock1.checked = true;
+            filterProducts();
         }
 
         // sort 
