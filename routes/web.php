@@ -10,6 +10,7 @@ Route::get('/product/{product}', [load_website::class, 'product']);
 Route::get('/cart', [load_website::class, 'cart'])->name('cart');
 Route::get('/category/{category}', [load_website::class, 'category']);
 Route::get('/checkout', [load_website::class, 'checkout']);
+Route::get('/search', [load_website::class, 'search'])->name('search');
 
 
 

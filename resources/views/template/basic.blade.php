@@ -14,9 +14,9 @@
         <div class="header-top">
             <a href="/" class="logo">Ecommerce</a>
             <div class="header-center">
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for any product or brand">
-                    <button>Search</button>
+                <div class="search-bar" action="{{ route('search') }}" >
+                    <input type="text" name="s" placeholder="Search for any product or brand">
+                    <button type="submit">Search</button>
                 </div>
             </div>
             <div class="header-right">

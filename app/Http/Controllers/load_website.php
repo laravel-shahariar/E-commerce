@@ -339,6 +339,29 @@ class load_website extends Controller
         return view('wishlist');
     }
 
+    function search(Request $request)
+    {
+        $query = $request->input('search') ?? $request->input('q') ?? $request->input('query') ?? '';
+
+        $products = collect();
+        if (!empty(trim($query))) {
+            $searchTerm = trim($query);
+            $products = product::where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('category', function ($sub) use ($searchTerm) {
+                        $sub->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('brand', function ($sub) use ($searchTerm) {
+                        $sub->where('name', 'like', '%' . $searchTerm . '%');
+                    });
+            })->get();
+        }
+
+        $view = view()->exists('search') ? 'search' : 'components.search';
+        return view($view, compact('products', 'query'));
+    }
+
     function contact()
     {
         return view("contact");
