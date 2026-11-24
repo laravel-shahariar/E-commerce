@@ -251,7 +251,7 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">{{ $category_name == "all" ? "All Categories" : ucWords(str_replace('-', ' ', $category_name)) }}</h1>
-                <div class="products-count">Showing {{ $products->count() }} product{{ $products->count() !== 1 ? 's' : '' }}</div>
+                <div class="products-count">Showing {{ $products->total() }} product{{ $products->total() !== 1 ? 's' : '' }}</div>
             </div>
         </div>
 
@@ -318,12 +318,12 @@
                     <div class="filter-option">
                         <input type="checkbox" id="stock1" checked>
                         <label class="filter-label" for="stock1">In Stock</label>
-                        <span class="filter-count">({{ $products->filter(fn($p) => (int)$p->stock > 0)->count() }})</span>
+                        <span class="filter-count">({{ $inStockCount ?? $products->filter(fn($p) => (int)$p->stock > 0)->count() }})</span>
                     </div>
                     <div class="filter-option">
                         <input type="checkbox" id="stock2">
                         <label class="filter-label" for="stock2">Out of Stock</label>
-                        <span class="filter-count">({{ $products->filter(fn($p) => (int)$p->stock <= 0)->count() }})</span>
+                        <span class="filter-count">({{ $outOfStockCount ?? $products->filter(fn($p) => (int)$p->stock <= 0)->count() }})</span>
                     </div>
                 </div>
 
@@ -369,13 +369,51 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="pagination">
-                    <a class="page-link active" href="#">1</a>
-                    <a class="page-link" href="#">2</a>
-                    <a class="page-link" href="#">3</a>
-                    <a class="page-link" href="#">4</a>
-                    <a class="page-link" href="#">Next →</a>
-                </div>
+                @if ($products->hasPages())
+                    <div class="pagination">
+                        {{-- Previous Page Link --}}
+                        @if (!$products->onFirstPage())
+                            <a class="page-link" href="{{ $products->previousPageUrl() }}" rel="prev">← Prev</a>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @php
+                            $start = max(1, $products->currentPage() - 2);
+                            $end = min($products->lastPage(), $products->currentPage() + 2);
+                        @endphp
+
+                        @if ($start > 1)
+                            <a class="page-link" href="{{ $products->url(1) }}">1</a>
+                            @if ($start > 2)
+                                <span class="page-link" style="border: none; background: transparent; cursor: default;">...</span>
+                            @endif
+                        @endif
+
+                        @foreach ($products->getUrlRange($start, $end) as $page => $url)
+                            @if ($page == $products->currentPage())
+                                <a class="page-link active" href="{{ $url }}">{{ $page }}</a>
+                            @else
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            @endif
+                        @endforeach
+
+                        @if ($end < $products->lastPage())
+                            @if ($end < $products->lastPage() - 1)
+                                <span class="page-link" style="border: none; background: transparent; cursor: default;">...</span>
+                            @endif
+                            <a class="page-link" href="{{ $products->url($products->lastPage()) }}">{{ $products->lastPage() }}</a>
+                        @endif
+
+                        {{-- Next Page Link --}}
+                        @if ($products->hasMorePages())
+                            <a class="page-link" href="{{ $products->nextPageUrl() }}" rel="next">Next →</a>
+                        @endif
+                    </div>
+                @else
+                    <div class="pagination">
+                        <a class="page-link active" href="#">1</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -412,8 +450,9 @@
 
             const cards = document.querySelectorAll('#productsGrid .product-card');
             let visibleCount = 0;
+
             cards.forEach(card => {
-                const price = parseFloat(card.querySelector('.price').textContent.replace(/[^0-9.]/g, '')) || 0;
+                const price = parseFloat(card.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
                 const stock = parseInt(card.dataset.stock ?? '1', 10);
                 const isAvailable = stock > 0;
 
@@ -438,16 +477,10 @@
                 }
             });
 
-            // show category name and product count 
-            if (productsCountDisplay) {
-                productsCountDisplay.textContent = 'Showing ' + visibleCount + ' product' + (visibleCount !== 1 ? 's' : '');
-            }
-
-            // empty message 
+            // Empty message
             let emptyMsg = document.getElementById('priceFilterEmptyMsg');
             if (visibleCount === 0 && cards.length > 0) {
                 if (!emptyMsg) {
-                    // create 
                     emptyMsg = document.createElement('p');
                     emptyMsg.id = 'priceFilterEmptyMsg';
                     emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; color: var(--text-light); padding: 40px 0;';
@@ -461,11 +494,17 @@
             }
         }
 
-        priceSlider.addEventListener('input', filterProducts);
-        stock1Checkbox.addEventListener('change', filterProducts);
-        stock2Checkbox.addEventListener('change', filterProducts);
+        if (priceSlider) {
+            priceSlider.addEventListener('input', filterProducts);
+        }
+        if (stock1Checkbox) {
+            stock1Checkbox.addEventListener('change', filterProducts);
+        }
+        if (stock2Checkbox) {
+            stock2Checkbox.addEventListener('change', filterProducts);
+        }
 
-        // Apply on initial load if slider value or availability filter is set
+        // Apply on initial load
         filterProducts();
 
         // clear 
@@ -483,18 +522,20 @@
 
         // sort 
         const sortSelect = document.querySelector('.sort-select');
-        sortSelect.addEventListener('change', function() {
-            const grid = document.getElementById('productsGrid');
-            const cards = Array.from(grid.querySelectorAll('.product-card'));
-            const val = this.value;
-            cards.sort((a, b) => {
-                const priceA = parseFloat(a.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
-                const priceB = parseFloat(b.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
-                if (val === 'Price: Low to High') return priceA - priceB;
-                if (val === 'Price: High to Low') return priceB - priceA;
-                return 0;
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                const grid = document.getElementById('productsGrid');
+                const cards = Array.from(grid.querySelectorAll('.product-card'));
+                const val = this.value;
+                cards.sort((a, b) => {
+                    const priceA = parseFloat(a.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
+                    const priceB = parseFloat(b.querySelector('.price')?.textContent.replace(/[^0-9.]/g, '') || 0);
+                    if (val === 'Price: Low to High') return priceA - priceB;
+                    if (val === 'Price: High to Low') return priceB - priceA;
+                    return 0;
+                });
+                cards.forEach(card => grid.appendChild(card));
             });
-            cards.forEach(card => grid.appendChild(card));
-        });
+        }
     </script>
 @endsection

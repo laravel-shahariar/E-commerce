@@ -346,7 +346,10 @@ class load_website extends Controller
             }
         }
 
-        $products = $query->get();
+        $inStockCount = (clone $query)->where('stock', '>', 0)->count();
+        $outOfStockCount = (clone $query)->where('stock', '<=', 0)->count();
+
+        $products = $query->paginate(6)->withQueryString();
 
         $maxProductPrice = product::max('price');
         $sliderMax = $maxProductPrice ? (int)ceil($maxProductPrice) : 10000;
@@ -354,7 +357,7 @@ class load_website extends Controller
             $sliderMax = 10000;
         }
 
-        return view('category', compact('category_name', 'products', 'sliderMax'));
+        return view('category', compact('category_name', 'products', 'sliderMax', 'inStockCount', 'outOfStockCount'));
     }
 
     function wishlist()
