@@ -25,12 +25,14 @@ class product extends Model
         'status',
         'views',
         'sold_count',
+        'rating',
     ];
 
     protected $casts = [
         'images' => 'array',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
+        'rating' => 'decimal:1',
     ];
 
     public function category() {

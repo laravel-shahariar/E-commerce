@@ -273,19 +273,34 @@
                 <div class="filter-group">
                     <div class="filter-title">⭐ Rating</div>
                     <div class="filter-option">
-                        <input type="checkbox" id="rating5">
+                        <input type="checkbox" class="rating-checkbox" id="rating5" value="5"
+                            {{ (is_array(request('rating')) && in_array(5, request('rating'))) || request('rating') == 5 ? 'checked' : '' }}>
                         <label class="filter-label" for="rating5">5 Star</label>
-                        <span class="filter-count">(234)</span>
+                        <span class="filter-count">({{ $ratingCounts[5] ?? 0 }})</span>
                     </div>
                     <div class="filter-option">
-                        <input type="checkbox" id="rating4">
+                        <input type="checkbox" class="rating-checkbox" id="rating4" value="4"
+                            {{ (is_array(request('rating')) && in_array(4, request('rating'))) || request('rating') == 4 ? 'checked' : '' }}>
                         <label class="filter-label" for="rating4">4 Star & Up</label>
-                        <span class="filter-count">(1245)</span>
+                        <span class="filter-count">({{ $ratingCounts[4] ?? 0 }})</span>
                     </div>
                     <div class="filter-option">
-                        <input type="checkbox" id="rating3">
+                        <input type="checkbox" class="rating-checkbox" id="rating3" value="3"
+                            {{ (is_array(request('rating')) && in_array(3, request('rating'))) || request('rating') == 3 ? 'checked' : '' }}>
                         <label class="filter-label" for="rating3">3 Star & Up</label>
-                        <span class="filter-count">(2156)</span>
+                        <span class="filter-count">({{ $ratingCounts[3] ?? 0 }})</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" class="rating-checkbox" id="rating2" value="2"
+                            {{ (is_array(request('rating')) && in_array(2, request('rating'))) || request('rating') == 2 ? 'checked' : '' }}>
+                        <label class="filter-label" for="rating2">2 Star & Up</label>
+                        <span class="filter-count">({{ $ratingCounts[2] ?? 0 }})</span>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" class="rating-checkbox" id="rating1" value="1"
+                            {{ (is_array(request('rating')) && in_array(1, request('rating'))) || request('rating') == 1 ? 'checked' : '' }}>
+                        <label class="filter-label" for="rating1">1 Star & Up</label>
+                        <span class="filter-count">({{ $ratingCounts[1] ?? 0 }})</span>
                     </div>
                 </div>
 

@@ -366,8 +366,39 @@ class load_website extends Controller
             }
         }
 
+        // Filter by rating if provided in request
+        if ($request->filled('rating')) {
+            $ratingParam = $request->rating;
+            if (is_array($ratingParam)) {
+                $minRating = min(array_map('floatval', $ratingParam));
+                $query->where('rating', '>=', $minRating);
+            } else {
+                $query->where('rating', '>=', (float)$ratingParam);
+            }
+        }
+
         $inStockCount = (clone $query)->where('stock', '>', 0)->count();
         $outOfStockCount = (clone $query)->where('stock', '<=', 0)->count();
+
+        // Calculate rating counts for 1 to 5 stars for the current category
+        $baseQuery = product::query();
+        if ($category_name !== 'all') {
+            $cat = category::where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%')->first();
+            if ($cat) {
+                $baseQuery->where('category_id', $cat->id);
+            } else {
+                $baseQuery->whereHas('category', function ($q) use ($category_name) {
+                    $q->where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%');
+                });
+            }
+        }
+        $ratingCounts = [
+            5 => (clone $baseQuery)->where('rating', '>=', 5.0)->count(),
+            4 => (clone $baseQuery)->where('rating', '>=', 4.0)->count(),
+            3 => (clone $baseQuery)->where('rating', '>=', 3.0)->count(),
+            2 => (clone $baseQuery)->where('rating', '>=', 2.0)->count(),
+            1 => (clone $baseQuery)->where('rating', '>=', 1.0)->count(),
+        ];
 
         // Get brands with product counts for this category
         $brands = brand::withCount(['product' => function ($q) use ($category_name) {
@@ -391,7 +422,7 @@ class load_website extends Controller
             $sliderMax = 200000;
         }
 
-        return view('category', compact('category_name', 'products', 'sliderMax', 'inStockCount', 'outOfStockCount', 'brands'));
+        return view('category', compact('category_name', 'products', 'sliderMax', 'inStockCount', 'outOfStockCount', 'brands', 'ratingCounts'));
     }
 
     function wishlist()
