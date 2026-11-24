@@ -291,26 +291,18 @@
 
                 <div class="filter-group">
                     <div class="filter-title">📦 Brand</div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="brand1">
-                        <label class="filter-label" for="brand1">Samsung</label>
-                        <span class="filter-count">(356)</span>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="brand2">
-                        <label class="filter-label" for="brand2">Apple</label>
-                        <span class="filter-count">(245)</span>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="brand3">
-                        <label class="filter-label" for="brand3">Sony</label>
-                        <span class="filter-count">(189)</span>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="brand4">
-                        <label class="filter-label" for="brand4">Google</label>
-                        <span class="filter-count">(123)</span>
-                    </div>
+                    @forelse($brands as $brand)
+                        <div class="filter-option">
+                            <input type="checkbox" class="brand-checkbox" id="brand{{ $brand->id }}" value="{{ $brand->id }}"
+                                {{ (is_array(request('brand')) && in_array($brand->id, request('brand'))) || request('brand') == $brand->id ? 'checked' : '' }}>
+                            <label class="filter-label" for="brand{{ $brand->id }}">{{ $brand->name }}</label>
+                            <span class="filter-count">({{ $brand->product_count ?? $brand->product()->count() }})</span>
+                        </div>
+                    @empty
+                        <div class="filter-option">
+                            <span class="filter-label" style="color: var(--text-light); font-size: 13px;">No brands available</span>
+                        </div>
+                    @endforelse
                 </div>
 
                 <div class="filter-group">
@@ -425,20 +417,31 @@
         const stock1Checkbox = document.getElementById('stock1');
         const stock2Checkbox = document.getElementById('stock2');
 
-        // Associate stock data with each product card
+        // Associate stock and brand data with each product card
         const productStockMap = @json($products->pluck('stock', 'id'));
         const productStockList = @json($products->map(fn($p) => (int)$p->stock));
+        const productBrandMap = @json($products->pluck('brand_id', 'id'));
+        const productBrandList = @json($products->map(fn($p) => $p->brand_id ? (int)$p->brand_id : ''));
         const allCards = document.querySelectorAll('#productsGrid .product-card');
         allCards.forEach((card, index) => {
             const href = card.getAttribute('href') || '';
             const match = href.match(/\/product\/(\d+)/);
             const prodId = match ? match[1] : null;
+
+            // stock 
             if (prodId && productStockMap[prodId] !== undefined) {
                 card.dataset.stock = productStockMap[prodId];
             } else if (productStockList[index] !== undefined) {
                 card.dataset.stock = productStockList[index];
             } else {
                 card.dataset.stock = 1;
+            }
+
+            // brand 
+            if (prodId && productBrandMap[prodId] !== undefined) {
+                card.dataset.brand = productBrandMap[prodId] ?? '';
+            } else {
+                card.dataset.brand = '';
             }
         });
 
@@ -447,6 +450,10 @@
             if (maxPriceDisplay && priceSlider) {
                 maxPriceDisplay.textContent = Number(maxVal).toLocaleString();
             }
+
+            // Brand filter selection
+            const selectedBrandCheckboxes = document.querySelectorAll('.brand-checkbox:checked');
+            const selectedBrands = Array.from(selectedBrandCheckboxes).map(cb => cb.value.toString());
 
             const cards = document.querySelectorAll('#productsGrid .product-card');
             let visibleCount = 0;
@@ -469,7 +476,14 @@
                     matchesStock = !isAvailable;
                 }
 
-                if (matchesPrice && matchesStock) {
+                // Brand filter
+                let matchesBrand = true;
+                if (selectedBrands.length > 0) {
+                    const cardBrand = card.dataset.brand ? card.dataset.brand.toString() : '';
+                    matchesBrand = selectedBrands.includes(cardBrand);
+                }
+
+                if (matchesPrice && matchesStock && matchesBrand) {
                     card.style.display = '';
                     visibleCount++;
                 } else {
@@ -503,6 +517,11 @@
         if (stock2Checkbox) {
             stock2Checkbox.addEventListener('change', filterProducts);
         }
+
+        // Brand checkbox event listeners
+        document.querySelectorAll('.brand-checkbox').forEach(cb => {
+            cb.addEventListener('change', filterProducts);
+        });
 
         // Apply on initial load
         filterProducts();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\product;
 use App\Models\category;
+use App\Models\brand;
 use App\Models\address;
 use App\Models\order;
 use App\Models\ordered_item;
@@ -346,18 +347,51 @@ class load_website extends Controller
             }
         }
 
+        // Filter by brand if provided in request
+        if ($request->filled('brand')) {
+            $brandParam = $request->brand;
+            if (is_array($brandParam)) {
+                $query->whereIn('brand_id', $brandParam);
+            } elseif (is_numeric($brandParam)) {
+                $query->where('brand_id', $brandParam);
+            } else {
+                $brandIds = explode(',', $brandParam);
+                if (count($brandIds) > 1 && is_numeric($brandIds[0])) {
+                    $query->whereIn('brand_id', $brandIds);
+                } else {
+                    $query->whereHas('brand', function ($bQuery) use ($brandParam) {
+                        $bQuery->where('name', $brandParam)->orWhere('id', $brandParam);
+                    });
+                }
+            }
+        }
+
         $inStockCount = (clone $query)->where('stock', '>', 0)->count();
         $outOfStockCount = (clone $query)->where('stock', '<=', 0)->count();
+
+        // Get brands with product counts for this category
+        $brands = brand::withCount(['product' => function ($q) use ($category_name) {
+            if ($category_name !== 'all') {
+                $cat = category::where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%')->first();
+                if ($cat) {
+                    $q->where('category_id', $cat->id);
+                } else {
+                    $q->whereHas('category', function ($catQuery) use ($category_name) {
+                        $catQuery->where('slug', $category_name)->orWhere('name', 'like', '%' . $category_name . '%');
+                    });
+                }
+            }
+        }])->get();
 
         $products = $query->paginate(6)->withQueryString();
 
         $maxProductPrice = product::max('price');
-        $sliderMax = $maxProductPrice ? (int)ceil($maxProductPrice) : 10000;
-        if ($sliderMax < 10000) {
-            $sliderMax = 10000;
+        $sliderMax = $maxProductPrice ? (int)ceil($maxProductPrice) : 200000;
+        if ($sliderMax < 200000) {
+            $sliderMax = 200000;
         }
 
-        return view('category', compact('category_name', 'products', 'sliderMax', 'inStockCount', 'outOfStockCount'));
+        return view('category', compact('category_name', 'products', 'sliderMax', 'inStockCount', 'outOfStockCount', 'brands'));
     }
 
     function wishlist()
